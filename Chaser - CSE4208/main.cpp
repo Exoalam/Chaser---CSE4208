@@ -26,7 +26,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void drawCube(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
-void bed(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 alTogether);
+void drawCube(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
+void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether);
 
 
 // settings
@@ -183,6 +184,67 @@ int main()
         1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f
     };
+
+    float pool[] = {
+        0,0,0,0.0f, 1.0f, 0.0f,
+        1.0,0,0.0,0.0f, 1.0f, 0.0f,
+        0.866,0,0.5,0.0f, 1.0f, 0.0f,
+        0.5,0,0.866,0.0f, 1.0f, 0.0f,
+        0.0,0,1.0,0.0f, 1.0f, 0.0f,
+        - 0.5,0,0.866,0.0f, 1.0f, 0.0f,
+        - 0.866,0,0.5,0.0f, 1.0f, 0.0f,
+        - 1.0,0,0.0,0.0f, 1.0f, 0.0f,
+        - 0.866,0,-0.5,0.0f, 1.0f, 0.0f,
+        - 0.5,0,0.866,0.0f, 1.0f, 0.0f,
+        0.0,0,-1.0,0.0f, 1.0f, 0.0f,
+        0.5,0,-0.866,0.0f, 1.0f, 0.0f,
+        0.866,0,-0.5,0.0f, 1.0f, 0.0f,
+        1.0,0,0.0,0.0f, 1.0f, 0.0f,
+
+        0,1,0, 0.0f, -1.0f, 0.0f,
+        1.0,1,0.0, 0.0f, -1.0f, 0.0f,
+        0.866,1,0.5, 0.0f, -1.0f, 0.0f,
+        0.5,1,0.866, 0.0f, -1.0f, 0.0f,
+        0.0,1,1.0, 0.0f, -1.0f, 0.0f,
+        - 0.5,1,0.866, 0.0f, -1.0f, 0.0f,
+        - 0.866,1,0.5, 0.0f, -1.0f, 0.0f,
+        - 1.0,1,0.0, 0.0f, -1.0f, 0.0f,
+        - 0.866,1,-0.5, 0.0f, -1.0f, 0.0f,
+        - 0.5,1,-0.866, 0.0f, -1.0f, 0.0f,
+        - 0.0,1,-1.0, 0.0f, -1.0f, 0.0f,
+        0.5,1,-0.866, 0.0f, -1.0f, 0.0f,
+        0.866,1,-0.5, 0.0f, -1.0f, 0.0f,
+        1.0,1,-0.0, 0.0f, -1.0f, 0.0f,
+
+    };
+
+    unsigned int pool_indx[] = {
+        0,1,2,
+        0,2,3,
+        0,3,4,
+        0,4,5,
+        0,5,6,
+        0,6,7,
+        0,7,8,
+        0,8,9,
+        0,9,10,
+        0,10,11,
+        0,11,12,
+        0,12,13,
+        0,13,14,
+        //15,16,17,
+        //15,17,18,
+        //15,18,19,
+        //15,19,20,
+        //15,20,21,
+        //15,21,22,
+        //15,22,23,
+        //15,23,24,
+        //15,24,25,
+        //15,25,26,
+        //15,26,27,
+        //15,27,28
+    };
     unsigned int cube_indices[] = {
         0, 3, 2,
         2, 1, 0,
@@ -225,6 +287,28 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
     glEnableVertexAttribArray(1);
 
+    unsigned int p1VAO, p1VBO, p1EBO;
+    glGenVertexArrays(1, &p1VAO);
+    glGenBuffers(1, &p1VBO);
+    glGenBuffers(1, &p1EBO);
+
+    glBindVertexArray(p1VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, p1VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(pool), pool, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p1EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(pool_indx), pool_indx, GL_STATIC_DRAW);
+
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // vertex normal attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
+    glEnableVertexAttribArray(1);
+
     // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
     unsigned int lightCubeVAO;
     glGenVertexArrays(1, &lightCubeVAO);
@@ -236,7 +320,7 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-
+   
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
@@ -278,7 +362,7 @@ int main()
 
         // activate shader
         lightingShader.use();
-
+        
         // pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         //glm::mat4 projection = glm::ortho(-2.0f, +2.0f, -1.5f, +1.5f, 0.1f, 100.0f);
@@ -304,7 +388,7 @@ int main()
         //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         //glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        bed(cubeVAO, lightingShader, model);
+        scene(cubeVAO, p1VAO, lightingShader, model);
 
         // also draw the lamp object(s)
         ourShader.use();
@@ -358,7 +442,21 @@ void drawCube(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 model = g
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
 
-void bed(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 alTogether)
+void drawPool(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model = glm::mat4(1.0f), float r = 1.0f, float g = 1.0f, float b = 1.0f) {
+    lightingShader.use();
+
+    lightingShader.setVec3("material.ambient", glm::vec3(r, g, b));
+    lightingShader.setVec3("material.diffuse", glm::vec3(r, g, b));
+    lightingShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    lightingShader.setFloat("material.shininess", 32.0f);
+
+    lightingShader.setMat4("model", model);
+
+    glBindVertexArray(p1VAO);
+    glDrawElements(GL_TRIANGLES, 27, GL_UNSIGNED_INT, 0);
+}
+
+void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether)
 {
     float baseHeight = 0.01;
     float width = 2;
@@ -403,6 +501,10 @@ void bed(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 alTogether)
         model = alTogether * model;
         drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
     }
+
+    model = transforamtion(0, 10, 0, 5, 5, 5);
+    model = alTogether * model;
+    drawPool(p1VAO, lightingShader, model, 1, 1, 1);
 
 }
 
