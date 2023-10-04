@@ -367,7 +367,7 @@ void bed(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 alTogether)
     glm::mat4 model = glm::mat4(1.0f);
 
     //Ground
-    model = transforamtion(-1, -0.01, -5, width*10, baseHeight, length*5);
+    model = transforamtion(-5, -0.01, -5, width*5, baseHeight, length);
     model = alTogether * model;
     drawCube(cubeVAO, lightingShader, model, 0, 0.431, 0.008);
 
@@ -395,12 +395,15 @@ void bed(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 alTogether)
     drawCube(cubeVAO, lightingShader, model, 0.239, 0.051, 0.09);
 
     //building
-    model = transforamtion(-4.4, 0, -5, width, baseHeight * 100, length);
-    model = alTogether * model;
-    drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    model = transforamtion(2.6, 0, -5, width, baseHeight * 100, length);
-    model = alTogether * model;
-    drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
+    for (int i = 0;i < 3;i++) {
+        model = transforamtion(-4.4, 0, -5+i*3.5, width, baseHeight * 500, length * .25);
+        model = alTogether * model;
+        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
+        model = transforamtion(2.6, 0, -5+i*3.5, width, baseHeight * 500, length * .25);
+        model = alTogether * model;
+        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
+    }
+
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
