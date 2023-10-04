@@ -502,9 +502,12 @@ void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, g
         drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
     }
 
-    model = transforamtion(0, 10, 0, 5, 5, 5);
-    model = alTogether * model;
-    drawPool(p1VAO, lightingShader, model, 1, 1, 1);
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(1.5, 0, 4.5-i*2, .05, 2, .05);
+        model = alTogether * model;
+        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
+    }
+
 
 }
 
