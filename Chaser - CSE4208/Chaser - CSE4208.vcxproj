@@ -140,13 +140,12 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="pointLight.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="SpotLight.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.fs" />
-    <None Include="fragmentShaderForGouraudShading.fs" />
     <None Include="fragmentShaderForPhongShading.fs" />
     <None Include="vertexShader.vs" />
-    <None Include="vertexShaderForGouraudShading.vs" />
     <None Include="vertexShaderForPhongShading.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -23,37 +23,34 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="basic_camera.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pointLight.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="basic_camera.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragmentShader.fs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="fragmentShaderForGouraudShading.fs">
-      <Filter>Source Files</Filter>
+    <None Include="vertexShaderForPhongShading.vs">
+      <Filter>Header Files</Filter>
     </None>
     <None Include="fragmentShaderForPhongShading.fs">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </None>
     <None Include="vertexShader.vs">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </None>
-    <None Include="vertexShaderForGouraudShading.vs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="vertexShaderForPhongShading.vs">
-      <Filter>Source Files</Filter>
+    <None Include="fragmentShader.fs">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>

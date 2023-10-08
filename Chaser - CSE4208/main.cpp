@@ -62,7 +62,7 @@ BasicCamera basic_camera(eyeX, eyeY, eyeZ, lookAtX, lookAtY, lookAtZ, V);
 
 // positions of the point lights
 glm::vec3 pointLightPositions[] = {
-    glm::vec3(1.50f,  1.50f,  0.0f),
+    glm::vec3(0.0f,  1.0f,  0.0f),
     //glm::vec3(1.5f,  -1.5f,  0.0f),
     //glm::vec3(-1.5f,  1.5f,  0.0f),
     //glm::vec3(-1.5f,  -1.5f,  0.0f)
@@ -401,7 +401,7 @@ int main()
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
+            model = glm::scale(model, glm::vec3(0.20f)); // Make it a smaller cube
             ourShader.setMat4("model", model);
             ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -503,11 +503,15 @@ void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, g
     }
 
     for (int i = 0; i < 4; i++) {
-        model = transforamtion(1.5, 0, 4.5-i*2, .05, 2, .05);
+        model = transforamtion(1.5, 0, 4.5-i*3, .05, 2, .05);
         model = alTogether * model;
         drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
     }
-
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(-1.5, 0, 4.5 - i * 3, .05, 2, .05);
+        model = alTogether * model;
+        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
+    }
 
 }
 
