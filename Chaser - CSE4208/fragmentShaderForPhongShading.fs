@@ -49,7 +49,7 @@ struct SpotLight {
 
 
 #define NR_POINT_LIGHTS 1
-#define NR_SPOT_LIGHTS 1
+#define NR_SPOT_LIGHTS 8
 
 in vec3 FragPos;
 in vec3 Normal;

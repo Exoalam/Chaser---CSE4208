@@ -11,6 +11,9 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include "shader.h"
+#include <iostream>
+#include <string>
+using namespace std;
 
 class SpotLight {
 public:
@@ -24,7 +27,7 @@ public:
     float k_q;
     float inner_circle;
     float outer_circle;
-    int lightNumber;
+    int Number;
 
     SpotLight(float posX, float posY, float posZ, float ambR, float ambG, float ambB, float diffR, float diffG, float diffB, float specR, float specG, float specB, float constant, float linear, float quadratic, int num, float in_circle, float out_circle, float dirX, float dirY, float dirZ) {
 
@@ -38,56 +41,36 @@ public:
         inner_circle = in_circle;
         outer_circle = out_circle;
         direction = glm::vec3(dirX, dirY, dirZ);
-        lightNumber = num;
+        Number = num-1;
+    }
+    SpotLight() {
+        position = glm::vec3(0, 0, 0);
+        ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+        diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+        specular = glm::vec3(1.0f, 1.0f, 1.0f);
+        k_c = 1.0f;
+        k_l = 0.09f;
+        k_q = 0.032f;
+        inner_circle = glm::cos(glm::radians(12.5f));
+        outer_circle = glm::cos(glm::radians(25.0f));
+        direction = glm::vec3(0, -1, 0);
+        Number = 1;
     }
     void setUpspotLight(Shader& lightingShader)
     {
         lightingShader.use();
-
-        if (lightNumber == 1) {
-            lightingShader.setVec3("spotLights[0].position", position);
-            lightingShader.setVec3("spotLights[0].ambient",  ambient);
-            lightingShader.setVec3("spotLights[0].diffuse",  diffuse);
-            lightingShader.setVec3("spotLights[0].specular",  specular);
-            lightingShader.setFloat("spotLights[0].k_c", k_c);
-            lightingShader.setFloat("spotLights[0].k_l", k_l);
-            lightingShader.setFloat("spotLights[0].k_q", k_q);
-            lightingShader.setFloat("spotLights[0].inner_circle", inner_circle);
-            lightingShader.setFloat("spotLights[0].outer_circle", outer_circle);
-            lightingShader.setVec3("spotLights[0].direction", direction);
-            lightingShader.setBool("slighton", true);
-        }
-
-        else if (lightNumber == 2)
-        {
-            lightingShader.setVec3("spotLights[1].position", position);
-            lightingShader.setVec3("spotLights[1].ambient", ambientOn * ambient);
-            lightingShader.setVec3("spotLights[1].diffuse", diffuseOn * diffuse);
-            lightingShader.setVec3("spotLights[1].specular", specularOn * specular);
-            lightingShader.setFloat("spotLights[1].k_c", k_c);
-            lightingShader.setFloat("spotLights[1].k_l", k_l);
-            lightingShader.setFloat("spotLights[1].k_q", k_q);
-        }
-        else if (lightNumber == 3)
-        {
-            lightingShader.setVec3("spotLights[2].position", position);
-            lightingShader.setVec3("spotLights[2].ambient", ambientOn * ambient);
-            lightingShader.setVec3("spotLights[2].diffuse", diffuseOn * diffuse);
-            lightingShader.setVec3("spotLights[2].specular", specularOn * specular);
-            lightingShader.setFloat("spotLights[2].k_c", k_c);
-            lightingShader.setFloat("spotLights[2].k_l", k_l);
-            lightingShader.setFloat("spotLights[2].k_q", k_q);
-        }
-        else
-        {
-            lightingShader.setVec3("spotLights[3].position", position);
-            lightingShader.setVec3("spotLights[3].ambient", ambientOn * ambient);
-            lightingShader.setVec3("spotLights[3].diffuse", diffuseOn * diffuse);
-            lightingShader.setVec3("spotLights[3].specular", specularOn * specular);
-            lightingShader.setFloat("spotLights[3].k_c", k_c);
-            lightingShader.setFloat("spotLights[3].k_l", k_l);
-            lightingShader.setFloat("spotLights[3].k_q", k_q);
-        }
+        string lightNumber = to_string(Number);
+        lightingShader.setVec3("spotLights["+lightNumber+"].position", position);
+        lightingShader.setVec3("spotLights["+lightNumber+"].ambient", ambient);
+        lightingShader.setVec3("spotLights["+lightNumber+"].diffuse", diffuse);
+        lightingShader.setVec3("spotLights["+lightNumber+"].specular", specular);
+        lightingShader.setFloat("spotLights["+lightNumber+"].k_c", k_c);
+        lightingShader.setFloat("spotLights["+lightNumber+"].k_l", k_l);
+        lightingShader.setFloat("spotLights["+lightNumber+"].k_q", k_q);
+        lightingShader.setFloat("spotLights["+lightNumber+"].inner_circle", inner_circle);
+        lightingShader.setFloat("spotLights["+lightNumber+"].outer_circle", outer_circle);
+        lightingShader.setVec3("spotLights["+lightNumber+"].direction", direction);
+        lightingShader.setBool("slighton", true);
     }
     void turnOff()
     {

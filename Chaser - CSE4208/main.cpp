@@ -28,7 +28,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void drawCube(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
 void drawCube(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
-void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether);
+void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether, Shader& Shader);
 
 
 // settings
@@ -345,6 +345,7 @@ int main()
 
     // render loop
     // -----------
+    SpotLight spotlight[8];
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -368,7 +369,17 @@ int main()
 
         // point light 1
         //pointlight1.setUpPointLight(lightingShader);
-        spotlight1.setUpspotLight(lightingShader);
+        for (int i = 0; i < 4; i++) {
+            spotlight[i].position = glm::vec3(.5, 2, 4.5 - i * 3);
+            spotlight[i].Number = i;
+            spotlight[i].setUpspotLight(lightingShader);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            spotlight[i+4].position = glm::vec3(-.5, 2, 4.5 - i * 3);
+            spotlight[i+4].Number = i+4;
+            spotlight[i+4].setUpspotLight(lightingShader);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
+
         // point light 2
         //pointlight2.setUpPointLight(lightingShader);
         //// point light 3
@@ -410,7 +421,7 @@ int main()
         //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         //glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        scene(cubeVAO, p1VAO, lightingShader, model);
+        scene(cubeVAO, p1VAO, lightingShader, model, ourShader);
 
         // also draw the lamp object(s)
         ourShader.use();
@@ -419,11 +430,13 @@ int main()
 
         // we now draw as many light bulbs as we have point lights.
         glBindVertexArray(lightCubeVAO);
-        for (unsigned int i = 0; i < 1; i++)
+        for (unsigned int i = 0; i < 4; i++)
         {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
+            model = transforamtion(.5, 2, 4.5 - i * 3, .05, .05, .05);
+            ourShader.setMat4("model", model);
+            ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            model = transforamtion(-.5, 2, 4.5 - i * 3, .05, .05, .05);
             ourShader.setMat4("model", model);
             ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -478,7 +491,7 @@ void drawPool(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model = glm
     glDrawElements(GL_TRIANGLES, 27, GL_UNSIGNED_INT, 0);
 }
 
-void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether)
+void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether, Shader& ourShader)
 {
     float baseHeight = 0.01;
     float width = 2;
@@ -524,6 +537,7 @@ void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, g
         drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
     }
 
+    //pool
     for (int i = 0; i < 4; i++) {
         model = transforamtion(1.5, 0, 4.5-i*3, .05, 2, .05);
         model = alTogether * model;
