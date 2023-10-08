@@ -16,6 +16,7 @@
 #include "camera.h"
 #include "basic_camera.h"
 #include "pointLight.h"
+#include "SpotLight.h"
 
 #include <iostream>
 
@@ -62,7 +63,7 @@ BasicCamera basic_camera(eyeX, eyeY, eyeZ, lookAtX, lookAtY, lookAtZ, V);
 
 // positions of the point lights
 glm::vec3 pointLightPositions[] = {
-    glm::vec3(0.0f,  1.0f,  0.0f),
+    glm::vec3(0,  1.50f,  0.0f),
     //glm::vec3(1.5f,  -1.5f,  0.0f),
     //glm::vec3(-1.5f,  1.5f,  0.0f),
     //glm::vec3(-1.5f,  -1.5f,  0.0f)
@@ -77,6 +78,20 @@ PointLight pointlight1(
     0.09f,  //k_l
     0.032f, //k_q
     1       // light number
+);
+
+SpotLight spotlight1(
+    pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z,  // position
+    1.0f, 1.0f, 1.0f,     // ambient
+    1.0f, 1.0f, 1.0f,      // diffuse
+    1.0f, 1.0f, 1.0f,        // specular
+    1.0f,   //k_c
+    0.09f,  //k_l
+    0.032f, //k_q
+    1,       // light number
+    glm::cos(glm::radians(12.5f)),
+    glm::cos(glm::radians(15.0f)),
+    0,-1,0
 );
 
 
@@ -352,7 +367,8 @@ int main()
         lightingShader.setVec3("viewPos", camera.Position);
 
         // point light 1
-        pointlight1.setUpPointLight(lightingShader);
+        //pointlight1.setUpPointLight(lightingShader);
+        spotlight1.setUpspotLight(lightingShader);
         // point light 2
         //pointlight2.setUpPointLight(lightingShader);
         //// point light 3
@@ -372,6 +388,12 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         //glm::mat4 view = basic_camera.createViewMatrix();
         lightingShader.setMat4("view", view);
+
+        lightingShader.setVec3("direcLight.direction", 0.5f, -3.0f, -3.0f);
+        lightingShader.setVec3("direcLight.ambient", 0.2f, 0.2f, 0.2f);
+        lightingShader.setVec3("direcLight.diffuse", 0.7f, 0.7f, 0.7f);
+        lightingShader.setVec3("direcLight.specular", 1.0f, 1.0f, 1.0f);
+        lightingShader.setBool("dlighton", true);
 
         // Modelling Transformation
         glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -401,7 +423,7 @@ int main()
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.20f)); // Make it a smaller cube
+            model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
             ourShader.setMat4("model", model);
             ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);

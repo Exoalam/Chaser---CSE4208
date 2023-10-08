@@ -46,6 +46,7 @@ public:
             lightingShader.setFloat("pointLights[0].k_c", k_c);
             lightingShader.setFloat("pointLights[0].k_l", k_l);
             lightingShader.setFloat("pointLights[0].k_q", k_q);
+            lightingShader.setBool("plighton", false);
         }
 
         else if (lightNumber == 2)
