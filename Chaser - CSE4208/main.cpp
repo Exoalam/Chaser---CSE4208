@@ -346,6 +346,8 @@ int main()
     // render loop
     // -----------
     SpotLight spotlight[8];
+    PointLight pointlight[9];
+    PointLight pointlight2[9];
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -370,14 +372,31 @@ int main()
         // point light 1
         //pointlight1.setUpPointLight(lightingShader);
         for (int i = 0; i < 4; i++) {
-            spotlight[i].position = glm::vec3(.5, 2, 4.5 - i * 3);
+            spotlight[i].position = glm::vec3(.5, 1.95, 4.5 - i * 3);
             spotlight[i].Number = i;
             spotlight[i].setUpspotLight(lightingShader);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            spotlight[i+4].position = glm::vec3(-.5, 2, 4.5 - i * 3);
+            spotlight[i+4].position = glm::vec3(-.5, 1.95, 4.5 - i * 3);
             spotlight[i+4].Number = i+4;
             spotlight[i+4].setUpspotLight(lightingShader);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
+        for (int i = 0;i < 9;i+=3) {
+            for (int j = 0; j < 3; j++) {
+                pointlight[j+i].position = glm::vec3(-2.4, 1 + j * 1.5, -3.7 + i * 3.5);
+                pointlight[j+i].Number = j+i;
+                pointlight[j+i].setUpPointLight(lightingShader);
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+        }
+        for (int i = 0;i < 9;i += 3) {
+            for (int j = 0; j < 3; j++) {
+                pointlight2[j + i].position = glm::vec3(2.59, 1 + j * 1.5, -3.7 + i * 3.5);
+                pointlight2[j + i].Number = j + i;
+                pointlight2[j + i].setUpPointLight(lightingShader);
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+
         }
 
         // point light 2
@@ -432,15 +451,33 @@ int main()
         glBindVertexArray(lightCubeVAO);
         for (unsigned int i = 0; i < 4; i++)
         {
-            model = transforamtion(.5, 2, 4.5 - i * 3, .05, .05, .05);
+            model = transforamtion(.5, 1.95, 4.5 - i * 3, .05, .05, .05);
             ourShader.setMat4("model", model);
             ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            model = transforamtion(-.5, 2, 4.5 - i * 3, .05, .05, .05);
+            model = transforamtion(-.5, 1.95, 4.5 - i * 3, .05, .05, .05);
             ourShader.setMat4("model", model);
             ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             //glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        for (int i = 0;i < 3;i++) {
+            for (int j = 0; j < 3; j++) {
+                model = transforamtion(-2.4, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+                ourShader.setMat4("model", model);
+                ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+     
+        }
+        for (int i = 0;i < 3;i++) {
+            for (int j = 0; j < 3; j++) {
+                model = transforamtion(2.59, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+                ourShader.setMat4("model", model);
+                ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+
         }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -548,7 +585,16 @@ void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, g
         model = alTogether * model;
         drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
     }
-
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(1.5, 1.95, 4.5 - i * 3, -.95, .05, .05);
+        model = alTogether * model;
+        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
+    }
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
+        model = alTogether * model;
+        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly

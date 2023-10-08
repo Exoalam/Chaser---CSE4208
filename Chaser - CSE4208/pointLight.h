@@ -11,6 +11,9 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include "shader.h"
+#include <iostream>
+#include <string>
+using namespace std;
 
 class PointLight {
 public:
@@ -21,7 +24,7 @@ public:
     float k_c;
     float k_l;
     float k_q;
-    int lightNumber;
+    int Number;
 
     PointLight(float posX, float posY, float posZ, float ambR, float ambG, float ambB, float diffR, float diffG, float diffB, float specR, float specG, float specB, float constant, float linear, float quadratic, int num) {
 
@@ -32,53 +35,31 @@ public:
         k_c = constant;
         k_l = linear;
         k_q = quadratic;
-        lightNumber = num;
+        Number = num-1;
+    }
+    PointLight() {
+        position = glm::vec3(0, 0, 0);
+        ambient = glm::vec3(0.1f, 0.1f, 0.1f);
+        diffuse = glm::vec3(0.141, 0.137, 0);
+        specular = glm::vec3(0.2f, 0.2f, 0.2f);
+        k_c = 1.0f;
+        k_l = 0.8f;
+        k_q = 0.032f;
+        Number = 1;
     }
     void setUpPointLight(Shader& lightingShader)
     {
         lightingShader.use();
-
-        if (lightNumber == 1) {
-            lightingShader.setVec3("pointLights[0].position", position);
-            lightingShader.setVec3("pointLights[0].ambient", ambientOn * ambient);
-            lightingShader.setVec3("pointLights[0].diffuse", diffuseOn * diffuse);
-            lightingShader.setVec3("pointLights[0].specular", specularOn * specular);
-            lightingShader.setFloat("pointLights[0].k_c", k_c);
-            lightingShader.setFloat("pointLights[0].k_l", k_l);
-            lightingShader.setFloat("pointLights[0].k_q", k_q);
-            lightingShader.setBool("plighton", false);
-        }
-
-        else if (lightNumber == 2)
-        {
-            lightingShader.setVec3("pointLights[1].position", position);
-            lightingShader.setVec3("pointLights[1].ambient", ambientOn * ambient);
-            lightingShader.setVec3("pointLights[1].diffuse", diffuseOn * diffuse);
-            lightingShader.setVec3("pointLights[1].specular", specularOn * specular);
-            lightingShader.setFloat("pointLights[1].k_c", k_c);
-            lightingShader.setFloat("pointLights[1].k_l", k_l);
-            lightingShader.setFloat("pointLights[1].k_q", k_q);
-        }
-        else if (lightNumber == 3)
-        {
-            lightingShader.setVec3("pointLights[2].position", position);
-            lightingShader.setVec3("pointLights[2].ambient", ambientOn * ambient);
-            lightingShader.setVec3("pointLights[2].diffuse", diffuseOn * diffuse);
-            lightingShader.setVec3("pointLights[2].specular", specularOn * specular);
-            lightingShader.setFloat("pointLights[2].k_c", k_c);
-            lightingShader.setFloat("pointLights[2].k_l", k_l);
-            lightingShader.setFloat("pointLights[2].k_q", k_q);
-        }
-        else
-        {
-            lightingShader.setVec3("pointLights[3].position", position);
-            lightingShader.setVec3("pointLights[3].ambient", ambientOn * ambient);
-            lightingShader.setVec3("pointLights[3].diffuse", diffuseOn * diffuse);
-            lightingShader.setVec3("pointLights[3].specular", specularOn * specular);
-            lightingShader.setFloat("pointLights[3].k_c", k_c);
-            lightingShader.setFloat("pointLights[3].k_l", k_l);
-            lightingShader.setFloat("pointLights[3].k_q", k_q);
-        }
+        string lightNumber = to_string(Number);
+        lightingShader.setVec3("pointLights[" + lightNumber + "].position", position);
+        lightingShader.setVec3("pointLights[" + lightNumber + "].ambient", ambient);
+        lightingShader.setVec3("pointLights[" + lightNumber + "].diffuse", diffuse);
+        lightingShader.setVec3("pointLights[" + lightNumber + "].specular", specular);
+        lightingShader.setFloat("pointLights[" + lightNumber + "].k_c", k_c);
+        lightingShader.setFloat("pointLights[" + lightNumber + "].k_l", k_l);
+        lightingShader.setFloat("pointLights[" + lightNumber + "].k_q", k_q);
+        lightingShader.setBool("plighton", true);
+        
     }
     void turnOff()
     {
