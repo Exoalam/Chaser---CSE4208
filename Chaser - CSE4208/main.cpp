@@ -378,27 +378,27 @@ int main()
         // ------
         if (nightmode) {
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            spotlightToggle = true;
-            s_ambient = 1;
-            s_diffuse = 1;
-            s_specular = 1;
-            pointlightToggle = true;
-            p_ambient = 1;
-            p_diffuse = 1;
-            p_specular = 1;
-            directionallightToggle = false;
+            //spotlightToggle = true;
+            //s_ambient = 1;
+            //s_diffuse = 1;
+            //s_specular = 1;
+            //pointlightToggle = true;
+            //p_ambient = 1;
+            //p_diffuse = 1;
+            //p_specular = 1;
+            //directionallightToggle = false;
         }
         else {
-            glClearColor(1, 0.992, 0.58, 1.0f);
-            spotlightToggle = false;
-            s_ambient = 0;
-            s_diffuse = 0;
-            s_specular = 0;
-            pointlightToggle = false;
-            p_ambient = 0;
-            p_diffuse = 0;
-            p_specular = 0;
-            directionallightToggle = true;
+            glClearColor(1, 0.996, 0.725,1);
+            //spotlightToggle = false;
+            //s_ambient = 0;
+            //s_diffuse = 0;
+            //s_specular = 0;
+            //pointlightToggle = false;
+            //p_ambient = 0;
+            //p_diffuse = 0;
+            //p_specular = 0;
+            //directionallightToggle = true;
         }
             
 
@@ -571,7 +571,10 @@ int main()
         }
         model = transforamtion(-5,30, -30,5, 5, 5);
         ourShader.setMat4("model", model);
-        ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+        if(nightmode)
+            ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+        else
+            ourShader.setVec3("color", glm::vec3(1, 0.984, 0));
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
