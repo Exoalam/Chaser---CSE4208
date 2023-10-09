@@ -28,6 +28,9 @@ public:
     float inner_circle;
     float outer_circle;
     int Number;
+    float s_ambient;
+    float s_diffuse;
+    float s_specular;
 
     SpotLight(float posX, float posY, float posZ, float ambR, float ambG, float ambB, float diffR, float diffG, float diffB, float specR, float specG, float specB, float constant, float linear, float quadratic, int num, float in_circle, float out_circle, float dirX, float dirY, float dirZ) {
 
@@ -42,6 +45,9 @@ public:
         outer_circle = out_circle;
         direction = glm::vec3(dirX, dirY, dirZ);
         Number = num-1;
+        s_ambient = 1;
+        s_diffuse = 1;
+        s_specular = 1;
     }
     SpotLight() {
         position = glm::vec3(0, 0, 0);
@@ -55,15 +61,18 @@ public:
         outer_circle = glm::cos(glm::radians(25.0f));
         direction = glm::vec3(0, -1, 0);
         Number = 1;
+        s_ambient = 1;
+        s_diffuse = 1;
+        s_specular = 1;
     }
     void setUpspotLight(Shader& lightingShader)
     {
         lightingShader.use();
         string lightNumber = to_string(Number);
         lightingShader.setVec3("spotLights["+lightNumber+"].position", position);
-        lightingShader.setVec3("spotLights["+lightNumber+"].ambient", ambient);
-        lightingShader.setVec3("spotLights["+lightNumber+"].diffuse", diffuse);
-        lightingShader.setVec3("spotLights["+lightNumber+"].specular", specular);
+        lightingShader.setVec3("spotLights["+lightNumber+"].ambient", ambient * s_ambient);
+        lightingShader.setVec3("spotLights["+lightNumber+"].diffuse", diffuse * s_diffuse);
+        lightingShader.setVec3("spotLights["+lightNumber+"].specular", specular * s_specular);
         lightingShader.setFloat("spotLights["+lightNumber+"].k_c", k_c);
         lightingShader.setFloat("spotLights["+lightNumber+"].k_l", k_l);
         lightingShader.setFloat("spotLights["+lightNumber+"].k_q", k_q);

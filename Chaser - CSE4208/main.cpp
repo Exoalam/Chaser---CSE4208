@@ -48,7 +48,12 @@ float translate_Z = 0.0;
 float scale_X = 1.0;
 float scale_Y = 1.0;
 float scale_Z = 1.0;
-
+float s_ambient = 1;
+float s_diffuse = 1;
+float s_specular = 1;
+float p_ambient = 1;
+float p_diffuse = 1;
+float p_specular = 1;
 // camera
 Camera camera(glm::vec3(0.0f, 1.1f, 5.2f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -102,6 +107,9 @@ bool ambientToggle = true;
 bool diffuseToggle = true;
 bool specularToggle = true;
 
+bool pointlightToggle = true;
+bool directionallightToggle = true;
+bool spotlightToggle = true;
 
 // timing
 float deltaTime = 0.0f;    // time between current frame and last frame
@@ -374,10 +382,16 @@ int main()
         for (int i = 0; i < 4; i++) {
             spotlight[i].position = glm::vec3(.5, 1.95, 4.5 - i * 3);
             spotlight[i].Number = i;
+            spotlight[i].s_ambient = s_ambient;
+            spotlight[i].s_diffuse = s_diffuse;
+            spotlight[i].s_specular = s_specular;
             spotlight[i].setUpspotLight(lightingShader);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             spotlight[i+4].position = glm::vec3(-.5, 1.95, 4.5 - i * 3);
             spotlight[i+4].Number = i+4;
+            spotlight[i+4].s_ambient = s_ambient;
+            spotlight[i+4].s_diffuse = s_diffuse;
+            spotlight[i+4].s_specular = s_specular;
             spotlight[i+4].setUpspotLight(lightingShader);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
@@ -385,6 +399,9 @@ int main()
             for (int j = 0; j < 3; j++) {
                 pointlight[j+i].position = glm::vec3(-2.4, 1 + j * 1.5, -3.7 + i * 3.5);
                 pointlight[j+i].Number = j+i;
+                pointlight[j + i].p_ambient = p_ambient;
+                pointlight[j + i].p_diffuse = p_diffuse;
+                pointlight[j + i].p_specular = p_specular;
                 pointlight[j+i].setUpPointLight(lightingShader);
                 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             }
@@ -393,6 +410,9 @@ int main()
             for (int j = 0; j < 3; j++) {
                 pointlight2[j + i].position = glm::vec3(2.59, 1 + j * 1.5, -3.7 + i * 3.5);
                 pointlight2[j + i].Number = j + i;
+                pointlight2[j + i].p_ambient = p_ambient;
+                pointlight2[j + i].p_diffuse = p_diffuse;
+                pointlight2[j + i].p_specular = p_specular;
                 pointlight2[j + i].setUpPointLight(lightingShader);
                 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             }
@@ -423,7 +443,7 @@ int main()
         lightingShader.setVec3("direcLight.ambient", 0.2f, 0.2f, 0.2f);
         lightingShader.setVec3("direcLight.diffuse", 0.7f, 0.7f, 0.7f);
         lightingShader.setVec3("direcLight.specular", 1.0f, 1.0f, 1.0f);
-        lightingShader.setBool("dlighton", true);
+        lightingShader.setBool("dlighton", directionallightToggle);
 
         // Modelling Transformation
         glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -616,6 +636,44 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
     }
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        if (directionallightToggle)
+            directionallightToggle = false;
+        else
+            directionallightToggle = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        if (pointlightToggle) {
+            pointlightToggle = false;
+            p_ambient = 0;
+            p_diffuse = 0;
+            p_specular = 0;
+        }
+
+        else {
+            pointlightToggle = true;
+            p_ambient = 1;
+            p_diffuse = 1;
+            p_specular = 1;
+        }
+
+    }
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        if (spotlightToggle) {
+            spotlightToggle = false;
+            s_ambient = 0;
+            s_diffuse = 0;
+            s_specular = 0;
+        }
+
+        else {
+            spotlightToggle = true;
+            s_ambient = 1;
+            s_diffuse = 1;
+            s_specular = 1;
+        }
+            
+    }
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
     {
@@ -687,14 +745,6 @@ void processInput(GLFWwindow* window)
     {
         eyeY -= 2.5 * deltaTime;
         basic_camera.changeEye(eyeX, eyeY, eyeZ);
-    }
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-    {
-        pointlight1.turnOff();
-        //pointlight2.turnOff();
-        //pointlight3.turnOff();
-        //pointlight4.turnOff();
-
     }
     /*if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
     {

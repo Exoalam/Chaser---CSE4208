@@ -25,6 +25,9 @@ public:
     float k_l;
     float k_q;
     int Number;
+    float p_ambient;
+    float p_diffuse;
+    float p_specular;
 
     PointLight(float posX, float posY, float posZ, float ambR, float ambG, float ambB, float diffR, float diffG, float diffB, float specR, float specG, float specB, float constant, float linear, float quadratic, int num) {
 
@@ -36,6 +39,9 @@ public:
         k_l = linear;
         k_q = quadratic;
         Number = num-1;
+        p_ambient = 1;
+        p_diffuse = 1;
+        p_specular = 1;
     }
     PointLight() {
         position = glm::vec3(0, 0, 0);
@@ -46,15 +52,18 @@ public:
         k_l = 0.8f;
         k_q = 0.032f;
         Number = 1;
+        p_ambient = 1;
+        p_diffuse = 1;
+        p_specular = 1;
     }
     void setUpPointLight(Shader& lightingShader)
     {
         lightingShader.use();
         string lightNumber = to_string(Number);
         lightingShader.setVec3("pointLights[" + lightNumber + "].position", position);
-        lightingShader.setVec3("pointLights[" + lightNumber + "].ambient", ambient);
-        lightingShader.setVec3("pointLights[" + lightNumber + "].diffuse", diffuse);
-        lightingShader.setVec3("pointLights[" + lightNumber + "].specular", specular);
+        lightingShader.setVec3("pointLights[" + lightNumber + "].ambient", ambient * p_ambient);
+        lightingShader.setVec3("pointLights[" + lightNumber + "].diffuse", diffuse * p_diffuse);
+        lightingShader.setVec3("pointLights[" + lightNumber + "].specular", specular * p_specular);
         lightingShader.setFloat("pointLights[" + lightNumber + "].k_c", k_c);
         lightingShader.setFloat("pointLights[" + lightNumber + "].k_l", k_l);
         lightingShader.setFloat("pointLights[" + lightNumber + "].k_q", k_q);
