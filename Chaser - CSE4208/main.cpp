@@ -17,7 +17,7 @@
 #include "basic_camera.h"
 #include "pointLight.h"
 #include "SpotLight.h"
-
+#include "sphere.h"
 #include <iostream>
 
 using namespace std;
@@ -361,6 +361,7 @@ int main()
     SpotLight spotlight[8];
     PointLight pointlight[9];
     PointLight pointlight2[9];
+    Sphere sphere = Sphere();
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -453,6 +454,20 @@ int main()
         lightingShader.setVec3("direcLight.specular", d_s);
         lightingShader.setBool("dlighton", directionallightToggle);
 
+
+        glm::vec3 e_a = glm::vec3(0.2f, 0.2f, 0.2f) * d_ambient;
+        glm::vec3 e_d = glm::vec3(0.7f, 0.7f, 0.7f) * d_diffuse;
+        glm::vec3 e_s = glm::vec3(1.0f, 1.0f, 1.0f) * d_specular;
+        lightingShader.setVec3("emissionlight.position", -5, 30, -30);
+        lightingShader.setVec3("emissionlight.ambient", e_a);
+        lightingShader.setVec3("emissionlight.diffuse", e_d);
+        lightingShader.setVec3("emissionlight.specular", e_s);
+        lightingShader.setFloat("emissionlightk_c", 1);
+        lightingShader.setFloat("emissionlight.k_l", .09);
+        lightingShader.setFloat("emissionlight.k_q", .032);
+        lightingShader.setVec3("emissionlight.emission", 0.2f, 0.2f, 0.2f);
+        lightingShader.setBool("elighton", false);
+
         // Modelling Transformation
         glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 translateMatrix, rotateXMatrix, rotateYMatrix, rotateZMatrix, scaleMatrix, model;
@@ -481,11 +496,22 @@ int main()
         {
             model = transforamtion(.5, 1.95, 4.5 - i * 3, .05, .05, .05);
             ourShader.setMat4("model", model);
-            ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+            if (spotlightToggle){
+                ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+            }
+            else {
+                ourShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
+            }
+            
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             model = transforamtion(-.5, 1.95, 4.5 - i * 3, .05, .05, .05);
             ourShader.setMat4("model", model);
-            ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+            if (spotlightToggle) {
+                ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+            }
+            else {
+                ourShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
+            }
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
@@ -518,7 +544,10 @@ int main()
             }
 
         }
-
+        model = transforamtion(-5,30, -30,5, 5, 5);
+        ourShader.setMat4("model", model);
+        ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);

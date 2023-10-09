@@ -140,6 +140,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="pointLight.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="sphere.h" />
     <ClInclude Include="SpotLight.h" />
   </ItemGroup>
   <ItemGroup>
