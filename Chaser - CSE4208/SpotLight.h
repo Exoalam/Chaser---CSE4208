@@ -81,58 +81,6 @@ public:
         lightingShader.setVec3("spotLights["+lightNumber+"].direction", direction);
         lightingShader.setBool("slighton", true);
     }
-    void turnOff()
-    {
-        ambientOn = 0.0;
-        diffuseOn = 0.0;
-        specularOn = 0.0;
-    }
-    void turnOn()
-    {
-        ambientOn = 1.0;
-        diffuseOn = 1.0;
-        specularOn = 1.0;
-    }
-    void turnAmbientOn()
-    {
-        ambientOn = 1.0;
-        diffuseOn = 0.0;
-        specularOn = 0.0;
-    }
-    void turnAmbientOff()
-    {
-        ambientOn = 0.0;
-        diffuseOn = 0.0;
-        specularOn = 0.0;
-    }
-    void turnDiffuseOn()
-    {
-        ambientOn = 0.0;
-        diffuseOn = 1.0;
-        specularOn = 0.0;
-    }
-    void turnDiffuseOff()
-    {
-        ambientOn = 0.0;
-        diffuseOn = 0.0;
-        specularOn = 0.0;
-    }
-    void turnSpecularOn()
-    {
-        ambientOn = 0.0;
-        diffuseOn = 0.0;
-        specularOn = 1.0;
-    }
-    void turnSpecularOff()
-    {
-        ambientOn = 0.0;
-        diffuseOn = 0.0;
-        specularOn = 0.0;
-    }
-private:
-    float ambientOn = 1.0;
-    float diffuseOn = 1.0;
-    float specularOn = 1.0;
 };
 
 #endif /* spotLight_h */
