@@ -54,6 +54,9 @@ float s_specular = 1;
 float p_ambient = 1;
 float p_diffuse = 1;
 float p_specular = 1;
+float d_ambient = 1;
+float d_diffuse = 1;
+float d_specular = 1;
 // camera
 Camera camera(glm::vec3(0.0f, 1.1f, 5.2f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -439,10 +442,13 @@ int main()
         //glm::mat4 view = basic_camera.createViewMatrix();
         lightingShader.setMat4("view", view);
 
+        glm::vec3 d_a = glm::vec3(0.2f, 0.2f, 0.2f) * d_ambient;
+        glm::vec3 d_d = glm::vec3(0.7f, 0.7f, 0.7f) * d_diffuse;
+        glm::vec3 d_s = glm::vec3(1.0f, 1.0f, 1.0f) * d_specular;
         lightingShader.setVec3("direcLight.direction", 0.5f, -3.0f, -3.0f);
-        lightingShader.setVec3("direcLight.ambient", 0.2f, 0.2f, 0.2f);
-        lightingShader.setVec3("direcLight.diffuse", 0.7f, 0.7f, 0.7f);
-        lightingShader.setVec3("direcLight.specular", 1.0f, 1.0f, 1.0f);
+        lightingShader.setVec3("direcLight.ambient", d_a);
+        lightingShader.setVec3("direcLight.diffuse", d_d);
+        lightingShader.setVec3("direcLight.specular", d_s);
         lightingShader.setBool("dlighton", directionallightToggle);
 
         // Modelling Transformation
@@ -671,6 +677,54 @@ void processInput(GLFWwindow* window)
             s_ambient = 1;
             s_diffuse = 1;
             s_specular = 1;
+        }
+
+    }
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+        if (ambientToggle) {
+            ambientToggle = false;
+            s_ambient = 0;
+            p_ambient = 0;
+            d_ambient = 0;
+        }
+
+        else {
+            ambientToggle = true;
+            s_ambient = 1;
+            p_ambient = 1;
+            d_ambient = 1;
+        }
+
+    }
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+        if (diffuseToggle) {
+            diffuseToggle = false;
+            s_diffuse = 0;
+            p_diffuse = 0;
+            d_diffuse = 0;
+        }
+
+        else {
+            diffuseToggle = true;
+            s_diffuse = 1;
+            p_diffuse = 1;
+            d_diffuse = 1;
+        }
+
+    }
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
+        if (specularToggle) {
+            specularToggle = false;
+            s_specular = 0;
+            p_specular = 0;
+            d_specular = 0;
+        }
+
+        else {
+            specularToggle = true;
+            s_specular = 1;
+            p_specular = 1;
+            d_specular = 1;
         }
 
     }
