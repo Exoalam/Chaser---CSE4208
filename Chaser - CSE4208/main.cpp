@@ -683,48 +683,108 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
         if (ambientToggle) {
             ambientToggle = false;
-            s_ambient = 0;
-            p_ambient = 0;
-            d_ambient = 0;
+            if (directionallightToggle) {
+                d_ambient = 0;
+            }
+            if (pointlightToggle) {
+                p_ambient = 0;
+            }
+
+            if (spotlightToggle) {
+                s_ambient = 0;
+            }
+ 
+
+
         }
 
         else {
             ambientToggle = true;
-            s_ambient = 1;
-            p_ambient = 1;
-            d_ambient = 1;
+            if (directionallightToggle) {
+                d_ambient = 1;
+            }
+            if (pointlightToggle) {
+                p_ambient = 1;
+            }
+
+            if (spotlightToggle) {
+                s_ambient = 1;
+            }
+
+
+
         }
 
     }
     if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
         if (diffuseToggle) {
             diffuseToggle = false;
-            s_diffuse = 0;
-            p_diffuse = 0;
-            d_diffuse = 0;
+            if (directionallightToggle) {
+                d_diffuse = 0;
+            }
+            if (pointlightToggle) {
+                p_diffuse = 0;
+            }
+
+            if (spotlightToggle) {
+                s_diffuse = 0;
+            }
+
+
+
         }
 
         else {
             diffuseToggle = true;
-            s_diffuse = 1;
-            p_diffuse = 1;
-            d_diffuse = 1;
+            if (directionallightToggle) {
+                d_diffuse = 1;
+            }
+            if (pointlightToggle) {
+                p_diffuse = 1;
+            }
+
+            if (spotlightToggle) {
+                s_diffuse = 1;;
+            }
+
+
+
         }
 
     }
     if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
         if (specularToggle) {
             specularToggle = false;
-            s_specular = 0;
-            p_specular = 0;
-            d_specular = 0;
+            if (directionallightToggle) {
+                d_specular = 0;
+            }
+            if (pointlightToggle) {
+                p_specular = 0;
+            }
+
+            if (spotlightToggle) {
+                s_specular = 0;
+            }
+
+
+
         }
 
         else {
             specularToggle = true;
-            s_specular = 1;
-            p_specular = 1;
-            d_specular = 1;
+            if (directionallightToggle) {
+                d_specular = 1;
+            }
+            if (pointlightToggle) {
+                p_specular = 1;
+            }
+
+            if (spotlightToggle) {
+                s_specular = 1;
+            }
+
+
+
         }
 
     }
