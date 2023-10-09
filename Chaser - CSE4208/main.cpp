@@ -114,6 +114,8 @@ bool pointlightToggle = true;
 bool directionallightToggle = true;
 bool spotlightToggle = true;
 
+bool nightmode = false;
+
 // timing
 float deltaTime = 0.0f;    // time between current frame and last frame
 float lastFrame = 0.0f;
@@ -491,7 +493,12 @@ int main()
             for (int j = 0; j < 3; j++) {
                 model = transforamtion(-2.4, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
                 ourShader.setMat4("model", model);
-                ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                if (pointlightToggle) {
+                    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                }
+                else {
+                    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+                }
                 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             }
      
@@ -500,7 +507,13 @@ int main()
             for (int j = 0; j < 3; j++) {
                 model = transforamtion(2.59, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
                 ourShader.setMat4("model", model);
-                ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                if (pointlightToggle) {
+                    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                }
+                else {
+                    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+                }
+                
                 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             }
 
