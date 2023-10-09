@@ -114,7 +114,7 @@ bool pointlightToggle = true;
 bool directionallightToggle = true;
 bool spotlightToggle = true;
 
-bool nightmode = false;
+bool nightmode = true;
 
 // timing
 float deltaTime = 0.0f;    // time between current frame and last frame
@@ -376,7 +376,32 @@ int main()
 
         // render
         // ------
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        if (nightmode) {
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            spotlightToggle = true;
+            s_ambient = 1;
+            s_diffuse = 1;
+            s_specular = 1;
+            pointlightToggle = true;
+            p_ambient = 1;
+            p_diffuse = 1;
+            p_specular = 1;
+            directionallightToggle = false;
+        }
+        else {
+            glClearColor(1, 0.992, 0.58, 1.0f);
+            spotlightToggle = false;
+            s_ambient = 0;
+            s_diffuse = 0;
+            s_specular = 0;
+            pointlightToggle = false;
+            p_ambient = 0;
+            p_diffuse = 0;
+            p_specular = 0;
+            directionallightToggle = true;
+        }
+            
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // be sure to activate shader when setting uniforms/drawing objects
@@ -851,7 +876,20 @@ void processInput(GLFWwindow* window)
 
         }
 
+
     }
+    if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
+        if (nightmode) {
+            nightmode = false;
+        }
+
+        else {
+            nightmode = true;
+
+        }
+
+    }
+
 
 }
 
