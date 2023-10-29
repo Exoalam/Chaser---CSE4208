@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\..\..\..\opengl\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic_camera.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="shader.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.fs" />
@@ -151,9 +153,6 @@
     <None Include="vertexShader.vs" />
     <None Include="vertexShaderForPhongShading.vs" />
     <None Include="vertexShaderForPhongShadingWithTexture.vs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Textures\road.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
