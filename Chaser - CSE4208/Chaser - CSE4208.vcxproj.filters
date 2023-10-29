@@ -41,6 +41,9 @@
     <ClInclude Include="sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertexShaderForPhongShading.vs">
@@ -55,5 +58,16 @@
     <None Include="fragmentShader.fs">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="fragmentShaderForPhongShadingWithTexture.fs">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="vertexShaderForPhongShadingWithTexture.vs">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\road.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

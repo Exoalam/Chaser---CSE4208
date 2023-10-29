@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="basic_camera.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cube.h" />
     <ClInclude Include="pointLight.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="sphere.h" />
@@ -146,8 +147,13 @@
   <ItemGroup>
     <None Include="fragmentShader.fs" />
     <None Include="fragmentShaderForPhongShading.fs" />
+    <None Include="fragmentShaderForPhongShadingWithTexture.fs" />
     <None Include="vertexShader.vs" />
     <None Include="vertexShaderForPhongShading.vs" />
+    <None Include="vertexShaderForPhongShadingWithTexture.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\road.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
