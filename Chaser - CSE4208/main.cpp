@@ -182,11 +182,31 @@ int main()
     Shader ourShader("vertexShader.vs", "fragmentShader.fs");
 
 
-    string diffuseMapPath = "Textures/road.png";
-    string specularMapPath = "Textures/road.png";
-    unsigned int diffMap = loadTexture(diffuseMapPath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    unsigned int specMap = loadTexture(specularMapPath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    Cube cube = Cube(diffMap, specMap, 32.0f, 0.0f, 0.0f, 1.0f, 4.0f);
+    string droadpath = "Textures/road.png";
+    string sroadpath = "Textures/road.png";
+    unsigned int droad = loadTexture(droadpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sroad = loadTexture(sroadpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube cube = Cube(droad, sroad, 32.0f, 0.0f, 0.0f, 1.0f, 4.0f);
+    Cube road = Cube(droad, sroad, 32.0f, 0.0f, 0.0f, 1.0f, 4.0f);
+
+    string dgrasspath = "Textures/grass.png";
+    string sgrasspath = "Textures/grass.png";
+    unsigned int dgrass = loadTexture(dgrasspath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sgrass = loadTexture(sgrasspath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube grass = Cube(dgrass, sgrass, 32.0f, 0.0f, 0.0f, 8.0f, 8.0f);
+
+    string db1path = "Textures/dbuilding1.jpg";
+    string sb1path = "Textures/dbuilding1.jpg";
+    unsigned int db1 = loadTexture(db1path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sb1 = loadTexture(sb1path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube b1 = Cube(db1, sb1, 32.0f, 0.0f, 0.0f, 4.0f, 4.0f);
+
+
+    string dppath = "Textures/dpool.jpg";
+    string sp1path = "Textures/spool.jpg";
+    unsigned int dp = loadTexture(db1path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sp = loadTexture(sb1path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube pool = Cube(dp, sp, 32.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -444,12 +464,12 @@ int main()
         //Ground
         model = transforamtion(-5, -0.01, -5, width * 5, baseHeight, length);
         model = alTogether * model;
-        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        grass.drawCubeWithTexture(lightingShaderWithTexture, model);
 
         //road
         model = transforamtion(-1, 0, -5, width, baseHeight, length);
         model = alTogether * model;
-        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        road.drawCubeWithTexture(lightingShaderWithTexture, model);
 
         model = transforamtion(-1.4, 0, -5, width * .2, baseHeight * 10, length);
         model = alTogether * model;
@@ -468,32 +488,32 @@ int main()
         for (int i = 0;i < 3;i++) {
             model = transforamtion(-4.4, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
             model = alTogether * model;
-            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+            b1.drawCubeWithTexture(lightingShaderWithTexture, model);
             model = transforamtion(2.6, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
             model = alTogether * model;
-            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+            b1.drawCubeWithTexture(lightingShaderWithTexture, model);
         }
 
         //pool
         for (int i = 0; i < 4; i++) {
             model = transforamtion(1.5, 0, 4.5 - i * 3, .05, 2, .05);
             model = alTogether * model;
-            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
         }
         for (int i = 0; i < 4; i++) {
             model = transforamtion(-1.5, 0, 4.5 - i * 3, .05, 2, .05);
             model = alTogether * model;
-            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
         }
         for (int i = 0; i < 4; i++) {
             model = transforamtion(1.5, 1.95, 4.5 - i * 3, -.95, .05, .05);
             model = alTogether * model;
-            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
         }
         for (int i = 0; i < 4; i++) {
             model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
             model = alTogether * model;
-            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
         }
 
         //// also draw the lamp object(s)
