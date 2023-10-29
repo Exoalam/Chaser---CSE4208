@@ -203,10 +203,22 @@ int main()
 
 
     string dppath = "Textures/dpool.jpg";
-    string sp1path = "Textures/spool.jpg";
-    unsigned int dp = loadTexture(db1path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    unsigned int sp = loadTexture(sb1path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    Cube pool = Cube(dp, sp, 32.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    string sppath = "Textures/spool.jpg";
+    unsigned int dp = loadTexture(dppath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sp = loadTexture(sppath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube pool = Cube(dp, sp, 32.0f, 0.0f, 0.0f, 0.5f, 10.0f);
+
+    string dfpath = "Textures/footpath.jpg";
+    string sfpath = "Textures/footpath.jpg";
+    unsigned int df = loadTexture(dfpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sf = loadTexture(sfpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube footpath = Cube(df, sf, 32.0f, 0.0f, 0.0f, 0.5f, 10.0f);
+
+    string df2path = "Textures/footpath2.jpg";
+    string sf2path = "Textures/footpath2.jpg";
+    unsigned int df2 = loadTexture(df2path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sf2 = loadTexture(sf2path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube footpath2 = Cube(df2, sf2, 32.0f, 0.0f, 0.0f, 20.0f, 1.0f);
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -473,16 +485,16 @@ int main()
 
         model = transforamtion(-1.4, 0, -5, width * .2, baseHeight * 10, length);
         model = alTogether * model;
-        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
         model = transforamtion(1, 0, -5, width * .2, baseHeight * 10, length);
         model = alTogether * model;
-        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
         model = transforamtion(-1.38, .1, -5, width * .18, baseHeight * .1, length);
         model = alTogether * model;
-        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        footpath.drawCubeWithTexture(lightingShaderWithTexture, model);
         model = transforamtion(1.02, .1, -5, width * .18, baseHeight * .1, length);
         model = alTogether * model;
-        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        footpath.drawCubeWithTexture(lightingShaderWithTexture, model);
 
         //building
         for (int i = 0;i < 3;i++) {
