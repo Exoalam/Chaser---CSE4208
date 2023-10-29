@@ -58,6 +58,12 @@ float p_specular = 1;
 float d_ambient = 1;
 float d_diffuse = 1;
 float d_specular = 1;
+float movefr = 4.5;
+float movelr = 0;
+float jump = .01;
+float jump_velocity = 0;
+float rtime = 0;
+bool jumpup = true;
 // camera
 Camera camera(glm::vec3(0.0f, 1.1f, 5.2f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -219,6 +225,12 @@ int main()
     unsigned int df2 = loadTexture(df2path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     unsigned int sf2 = loadTexture(sf2path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube footpath2 = Cube(df2, sf2, 32.0f, 0.0f, 0.0f, 20.0f, 1.0f);
+
+    string dwpath = "Textures/window.png";
+    string swpath = "Textures/window.png";
+    unsigned int dw = loadTexture(dwpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int sw = loadTexture(swpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube win = Cube(dw, sw, 32.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -496,6 +508,33 @@ int main()
         model = alTogether * model;
         footpath.drawCubeWithTexture(lightingShaderWithTexture, model);
 
+
+        if (jump>=.02) {
+            rtime += deltaTime;
+            if (jump <= 1 && jumpup) {
+                jump = jump_velocity + 2.5 * rtime;
+            }
+            else if(jump > 1 && jumpup){
+                jumpup = false;
+                rtime = 0;
+                jump_velocity = 1;
+            }
+            else if (!jumpup) {
+                jump = jump_velocity - 2.5 * rtime;
+                cout << jump << endl;
+            }
+            
+        }
+        else {
+            jump = .01;
+            rtime = 0;
+            jumpup = true;
+        }
+        model = transforamtion(movelr, jump, movefr, .5, .5, .5);
+        model = alTogether * model;
+        grass.drawCubeWithTexture(lightingShaderWithTexture, model);
+        
+
         //building
         for (int i = 0;i < 3;i++) {
             model = transforamtion(-4.4, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
@@ -526,6 +565,38 @@ int main()
             model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
             model = alTogether * model;
             pool.drawCubeWithTexture(lightingShaderWithTexture, model);
+        }
+        for (int i = 0;i < 3;i++) {
+            for (int j = 0; j < 3; j++) {
+                model = transforamtion(-2.4, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+                model = alTogether * model;
+                win.drawCubeWithTexture(lightingShaderWithTexture, model);
+                //ourShader.setMat4("model", model);
+                //if (pointlightToggle) {
+                //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                //}
+                //else {
+                //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+                //}
+                //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+
+        }
+        for (int i = 0;i < 3;i++) {
+            for (int j = 0; j < 3; j++) {
+                model = transforamtion(2.59, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+                model = alTogether * model;
+                win.drawCubeWithTexture(lightingShaderWithTexture, model);
+                //ourShader.setMat4("model", model);
+                //if (pointlightToggle) {
+                //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+                //}
+                //else {
+                //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+                //}
+
+                //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
         }
 
         //// also draw the lamp object(s)
@@ -558,35 +629,7 @@ int main()
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        for (int i = 0;i < 3;i++) {
-            for (int j = 0; j < 3; j++) {
-                model = transforamtion(-2.4, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
-                ourShader.setMat4("model", model);
-                if (pointlightToggle) {
-                    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
-                }
-                else {
-                    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
-                }
-                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            }
-     
-        }
-        for (int i = 0;i < 3;i++) {
-            for (int j = 0; j < 3; j++) {
-                model = transforamtion(2.59, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
-                ourShader.setMat4("model", model);
-                if (pointlightToggle) {
-                    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
-                }
-                else {
-                    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
-                }
-                
-                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            }
 
-        }
         model = transforamtion(-5,30, -30,5, 5, 5);
         ourShader.setMat4("model", model);
         if(nightmode)
@@ -687,6 +730,21 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         camera.ProcessKeyboard(R_RIGHT, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
+        movefr -= .1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+        movefr += .1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+        movelr -= .1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+        movelr += .1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        jump = .03;
     }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
         if (directionallightToggle)
