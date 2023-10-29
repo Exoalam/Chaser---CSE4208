@@ -30,10 +30,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void drawCube(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
 void drawCube(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
-void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether, Shader& Shader);
+void scene(Cube cube, Shader& lightingShaderWithTexture, glm::mat4 alTogether);
 
 
-// settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
@@ -225,66 +224,6 @@ int main()
         0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f
     };
 
-    float pool[] = {
-        0,0,0,0.0f, 1.0f, 0.0f,
-        1.0,0,0.0,0.0f, 1.0f, 0.0f,
-        0.866,0,0.5,0.0f, 1.0f, 0.0f,
-        0.5,0,0.866,0.0f, 1.0f, 0.0f,
-        0.0,0,1.0,0.0f, 1.0f, 0.0f,
-        - 0.5,0,0.866,0.0f, 1.0f, 0.0f,
-        - 0.866,0,0.5,0.0f, 1.0f, 0.0f,
-        - 1.0,0,0.0,0.0f, 1.0f, 0.0f,
-        - 0.866,0,-0.5,0.0f, 1.0f, 0.0f,
-        - 0.5,0,0.866,0.0f, 1.0f, 0.0f,
-        0.0,0,-1.0,0.0f, 1.0f, 0.0f,
-        0.5,0,-0.866,0.0f, 1.0f, 0.0f,
-        0.866,0,-0.5,0.0f, 1.0f, 0.0f,
-        1.0,0,0.0,0.0f, 1.0f, 0.0f,
-
-        0,1,0, 0.0f, -1.0f, 0.0f,
-        1.0,1,0.0, 0.0f, -1.0f, 0.0f,
-        0.866,1,0.5, 0.0f, -1.0f, 0.0f,
-        0.5,1,0.866, 0.0f, -1.0f, 0.0f,
-        0.0,1,1.0, 0.0f, -1.0f, 0.0f,
-        - 0.5,1,0.866, 0.0f, -1.0f, 0.0f,
-        - 0.866,1,0.5, 0.0f, -1.0f, 0.0f,
-        - 1.0,1,0.0, 0.0f, -1.0f, 0.0f,
-        - 0.866,1,-0.5, 0.0f, -1.0f, 0.0f,
-        - 0.5,1,-0.866, 0.0f, -1.0f, 0.0f,
-        - 0.0,1,-1.0, 0.0f, -1.0f, 0.0f,
-        0.5,1,-0.866, 0.0f, -1.0f, 0.0f,
-        0.866,1,-0.5, 0.0f, -1.0f, 0.0f,
-        1.0,1,-0.0, 0.0f, -1.0f, 0.0f,
-
-    };
-
-    unsigned int pool_indx[] = {
-        0,1,2,
-        0,2,3,
-        0,3,4,
-        0,4,5,
-        0,5,6,
-        0,6,7,
-        0,7,8,
-        0,8,9,
-        0,9,10,
-        0,10,11,
-        0,11,12,
-        0,12,13,
-        0,13,14,
-        //15,16,17,
-        //15,17,18,
-        //15,18,19,
-        //15,19,20,
-        //15,20,21,
-        //15,21,22,
-        //15,22,23,
-        //15,23,24,
-        //15,24,25,
-        //15,25,26,
-        //15,26,27,
-        //15,27,28
-    };
     unsigned int cube_indices[] = {
         0, 3, 2,
         2, 1, 0,
@@ -317,28 +256,6 @@ int main()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices, GL_STATIC_DRAW);
-
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // vertex normal attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
-    glEnableVertexAttribArray(1);
-
-    unsigned int p1VAO, p1VBO, p1EBO;
-    glGenVertexArrays(1, &p1VAO);
-    glGenBuffers(1, &p1VBO);
-    glGenBuffers(1, &p1EBO);
-
-    glBindVertexArray(p1VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, p1VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(pool), pool, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, p1EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(pool_indx), pool_indx, GL_STATIC_DRAW);
 
 
     // position attribute
@@ -508,21 +425,76 @@ int main()
 
         // Modelling Transformation
         glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        glm::mat4 translateMatrix, rotateXMatrix, rotateYMatrix, rotateZMatrix, scaleMatrix, model;
+        glm::mat4 translateMatrix, rotateXMatrix, rotateYMatrix, rotateZMatrix, scaleMatrix, alTogether;
         translateMatrix = glm::translate(identityMatrix, glm::vec3(translate_X, translate_Y, translate_Z));
         rotateXMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_X), glm::vec3(1.0f, 0.0f, 0.0f));
         rotateYMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_Y), glm::vec3(0.0f, 1.0f, 0.0f));
         rotateZMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_Z), glm::vec3(0.0f, 0.0f, 1.0f));
         scaleMatrix = glm::scale(identityMatrix, glm::vec3(scale_X, scale_Y, scale_Z));
-        model = translateMatrix * rotateXMatrix * rotateYMatrix * rotateZMatrix * scaleMatrix;
-        lightingShader.setMat4("model", model);
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
+        alTogether = translateMatrix * rotateXMatrix * rotateYMatrix * rotateZMatrix * scaleMatrix;
         ////glBindVertexArray(cubeVAO);
         ////glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         ////glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        scene(cubeVAO, p1VAO, lightingShader, model, ourShader);
+        float baseHeight = 0.01;
+        float width = 2;
+        float length = 10;
+
+        glm::mat4 model = glm::mat4(1.0f);
+        //Ground
+        model = transforamtion(-5, -0.01, -5, width * 5, baseHeight, length);
+        model = alTogether * model;
+        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+
+        //road
+        model = transforamtion(-1, 0, -5, width, baseHeight, length);
+        model = alTogether * model;
+        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+
+        model = transforamtion(-1.4, 0, -5, width * .2, baseHeight * 10, length);
+        model = alTogether * model;
+        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        model = transforamtion(1, 0, -5, width * .2, baseHeight * 10, length);
+        model = alTogether * model;
+        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        model = transforamtion(-1.38, .1, -5, width * .18, baseHeight * .1, length);
+        model = alTogether * model;
+        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        model = transforamtion(1.02, .1, -5, width * .18, baseHeight * .1, length);
+        model = alTogether * model;
+        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+
+        //building
+        for (int i = 0;i < 3;i++) {
+            model = transforamtion(-4.4, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
+            model = alTogether * model;
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+            model = transforamtion(2.6, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
+            model = alTogether * model;
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        }
+
+        //pool
+        for (int i = 0; i < 4; i++) {
+            model = transforamtion(1.5, 0, 4.5 - i * 3, .05, 2, .05);
+            model = alTogether * model;
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        }
+        for (int i = 0; i < 4; i++) {
+            model = transforamtion(-1.5, 0, 4.5 - i * 3, .05, 2, .05);
+            model = alTogether * model;
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        }
+        for (int i = 0; i < 4; i++) {
+            model = transforamtion(1.5, 1.95, 4.5 - i * 3, -.95, .05, .05);
+            model = alTogether * model;
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        }
+        for (int i = 0; i < 4; i++) {
+            model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
+            model = alTogether * model;
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        }
 
         //// also draw the lamp object(s)
         ourShader.use();
@@ -590,12 +562,6 @@ int main()
         else
             ourShader.setVec3("color", glm::vec3(1, 0.984, 0));
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        lightingShaderWithTexture.use();
-        float baseHeight = 0.01;
-        float width = 2;
-        float length = 10;
-        model = transforamtion(-1, 0, -5, width, baseHeight, length);
-        cube.drawCubeWithTexture(lightingShaderWithTexture, model);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -643,75 +609,6 @@ void drawPool(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model = glm
 
     glBindVertexArray(p1VAO);
     glDrawElements(GL_TRIANGLES, 27, GL_UNSIGNED_INT, 0);
-}
-
-void scene(unsigned int& cubeVAO, unsigned int& p1VAO, Shader& lightingShader, glm::mat4 alTogether, Shader& ourShader)
-{
-    float baseHeight = 0.01;
-    float width = 2;
-    float length = 10;
-
-    glm::mat4 model = glm::mat4(1.0f);
-
-    //Ground
-    model = transforamtion(-5, -0.01, -5, width*5, baseHeight, length);
-    model = alTogether * model;
-    drawCube(cubeVAO, lightingShader, model, 0, 0.431, 0.008);
-
-    //road
-    //model = transforamtion(-1, 0, -5, width, baseHeight, length);
-    //model = alTogether * model;
-    //drawCube(cubeVAO, lightingShader, model, 0.1, 0.1, 0.1);
-
-    //for (int i = -3; i < 3; i++) {
-    //    model = transforamtion(0, .001, .5+i*1.5, .05, .01, .7);
-    //    model = alTogether * model;
-    //    drawCube(cubeVAO, lightingShader, model, .8, .8, .8);
-    //}
-    model = transforamtion(-1.4, 0, -5, width*.2, baseHeight*10, length);
-    model = alTogether * model;
-    drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    model = transforamtion(1, 0, -5, width * .2, baseHeight * 10, length);
-    model = alTogether * model;
-    drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    model = transforamtion(-1.38, .1, -5, width * .18, baseHeight*.1, length);
-    model = alTogether * model;
-    drawCube(cubeVAO, lightingShader, model, 0.239, 0.051, 0.09);
-    model = transforamtion(1.02, .1, -5, width * .18, baseHeight*.1, length);
-    model = alTogether * model;
-    drawCube(cubeVAO, lightingShader, model, 0.239, 0.051, 0.09);
-
-    //building
-    for (int i = 0;i < 3;i++) {
-        model = transforamtion(-4.4, 0, -5+i*3.5, width, baseHeight * 500, length * .25);
-        model = alTogether * model;
-        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-        model = transforamtion(2.6, 0, -5+i*3.5, width, baseHeight * 500, length * .25);
-        model = alTogether * model;
-        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    }
-
-    //pool
-    for (int i = 0; i < 4; i++) {
-        model = transforamtion(1.5, 0, 4.5-i*3, .05, 2, .05);
-        model = alTogether * model;
-        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    }
-    for (int i = 0; i < 4; i++) {
-        model = transforamtion(-1.5, 0, 4.5 - i * 3, .05, 2, .05);
-        model = alTogether * model;
-        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    }
-    for (int i = 0; i < 4; i++) {
-        model = transforamtion(1.5, 1.95, 4.5 - i * 3, -.95, .05, .05);
-        model = alTogether * model;
-        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    }
-    for (int i = 0; i < 4; i++) {
-        model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
-        model = alTogether * model;
-        drawCube(cubeVAO, lightingShader, model, 0.71, 0.71, 0.71);
-    }
 }
 
 
