@@ -232,6 +232,12 @@ int main()
     unsigned int sw = loadTexture(swpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube win = Cube(dw, sw, 32.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 
+    string dplayerpath = "Textures/dplayer.jpg";
+    string splayerpath = "Textures/splayer.jpg";
+    unsigned int dplayer = loadTexture(dplayerpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    unsigned int splayer = loadTexture(splayerpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube player = Cube(dplayer, splayer, 32.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
@@ -532,7 +538,7 @@ int main()
         }
         model = transforamtion(movelr, jump, movefr, .5, .5, .5);
         model = alTogether * model;
-        grass.drawCubeWithTexture(lightingShaderWithTexture, model);
+        player.drawCubeWithTexture(lightingShaderWithTexture, model);
         
 
         //building
@@ -732,16 +738,16 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(R_RIGHT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
-        movefr -= .1;
+        movefr -= .05;
     }
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-        movefr += .1;
+        movefr += .05;
     }
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
-        movelr -= .1;
+        movelr -= .05;
     }
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-        movelr += .1;
+        movelr += .05;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         jump = .03;
