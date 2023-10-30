@@ -636,14 +636,25 @@ int main()
             //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        model = transforamtion(-5,30, -30,5, 5, 5);
-        ourShader.setMat4("model", model);
+       
         if(nightmode)
             ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
         else
             ourShader.setVec3("color", glm::vec3(1, 0.984, 0));
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
+        lightingShader.use();
+        lightingShader.setVec3("viewPos", camera.Position);
+        lightingShader.setMat4("projection", projection);
+        lightingShader.setMat4("view", view);
+        lightingShader.setVec3("direcLight.direction", 0.5f, -3.0f, -3.0f);
+        lightingShader.setVec3("direcLight.ambient", d_a);
+        lightingShader.setVec3("direcLight.diffuse", d_d);
+        lightingShader.setVec3("direcLight.specular", d_s);
+        lightingShader.setBool("dlighton", directionallightToggle);
+        model = transforamtion(-5, 30, -30, 5, 5, 5);
+        Sphere sphere;
+        sphere.drawSphere(lightingShader, model);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
