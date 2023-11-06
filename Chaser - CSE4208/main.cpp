@@ -138,6 +138,127 @@ glm::mat4 transforamtion(float tx, float ty, float tz,float sx, float sy, float 
     return model;
 }
 
+void scene_manager(Cube cube[], glm::mat4 alTogether, Shader lightingShaderWithTexture) {
+    float baseHeight = 0.01;
+    float width = 2;
+    float length = 10;
+    glm::mat4 model = glm::mat4(1.0f);
+    //Ground
+    model = transforamtion(-5, -0.01, -5, width * 5, baseHeight, length);
+    model = alTogether * model;
+    cube[0].drawCubeWithTexture(lightingShaderWithTexture, model);
+
+    //road
+    model = transforamtion(-1, 0, -5, width, baseHeight, length);
+    model = alTogether * model;
+    cube[1].drawCubeWithTexture(lightingShaderWithTexture, model);
+
+    model = transforamtion(-1.4, 0, -5, width * .2, baseHeight * 10, length);
+    model = alTogether * model;
+    cube[3].drawCubeWithTexture(lightingShaderWithTexture, model);
+    model = transforamtion(1, 0, -5, width * .2, baseHeight * 10, length);
+    model = alTogether * model;
+    cube[3].drawCubeWithTexture(lightingShaderWithTexture, model);
+    model = transforamtion(-1.38, .1, -5, width * .18, baseHeight * .1, length);
+    model = alTogether * model;
+    cube[2].drawCubeWithTexture(lightingShaderWithTexture, model);
+    model = transforamtion(1.02, .1, -5, width * .18, baseHeight * .1, length);
+    model = alTogether * model;
+    cube[2].drawCubeWithTexture(lightingShaderWithTexture, model);
+
+
+    if (jump >= .02) {
+        rtime += deltaTime;
+        if (jump <= 1 && jumpup) {
+            jump = jump_velocity + 2.5 * rtime;
+        }
+        else if (jump > 1 && jumpup) {
+            jumpup = false;
+            rtime = 0;
+            jump_velocity = 1;
+        }
+        else if (!jumpup) {
+            jump = jump_velocity - 2.5 * rtime;
+            cout << jump << endl;
+        }
+
+    }
+    else {
+        jump = .01;
+        rtime = 0;
+        jumpup = true;
+    }
+    model = transforamtion(movelr, jump, movefr, .5, .5, .5);
+    model = alTogether * model;
+    cube[4].drawCubeWithTexture(lightingShaderWithTexture, model);
+
+
+    //building
+    for (int i = 0;i < 3;i++) {
+        model = transforamtion(-4.4, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
+        model = alTogether * model;
+        cube[5].drawCubeWithTexture(lightingShaderWithTexture, model);
+        model = transforamtion(2.6, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
+        model = alTogether * model;
+        cube[5].drawCubeWithTexture(lightingShaderWithTexture, model);
+    }
+
+    //pool
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(1.5, 0, 4.5 - i * 3, .05, 2, .05);
+        model = alTogether * model;
+        cube[6].drawCubeWithTexture(lightingShaderWithTexture, model);
+    }
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(-1.5, 0, 4.5 - i * 3, .05, 2, .05);
+        model = alTogether * model;
+        cube[6].drawCubeWithTexture(lightingShaderWithTexture, model);
+    }
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(1.5, 1.95, 4.5 - i * 3, -.95, .05, .05);
+        model = alTogether * model;
+        cube[6].drawCubeWithTexture(lightingShaderWithTexture, model);
+    }
+    for (int i = 0; i < 4; i++) {
+        model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
+        model = alTogether * model;
+        cube[6].drawCubeWithTexture(lightingShaderWithTexture, model);
+    }
+    for (int i = 0;i < 3;i++) {
+        for (int j = 0; j < 3; j++) {
+            model = transforamtion(-2.4, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+            model = alTogether * model;
+            cube[7].drawCubeWithTexture(lightingShaderWithTexture, model);
+            //ourShader.setMat4("model", model);
+            //if (pointlightToggle) {
+            //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+            //}
+            //else {
+            //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+            //}
+            //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
+
+    }
+    for (int i = 0;i < 3;i++) {
+        for (int j = 0; j < 3; j++) {
+            model = transforamtion(2.59, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+            model = alTogether * model;
+            cube[7].drawCubeWithTexture(lightingShaderWithTexture, model);
+            //ourShader.setMat4("model", model);
+            //if (pointlightToggle) {
+            //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+            //}
+            //else {
+            //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+            //}
+
+            //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
+    }
+
+}
+
 int main()
 {
     // glfw: initialize and configure
@@ -238,6 +359,7 @@ int main()
     unsigned int splayer = loadTexture(splayerpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube player = Cube(dplayer, splayer, 32.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 
+    Cube cube_array[] = {grass, road, footpath, footpath2, player, b1, pool, win};
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
@@ -486,124 +608,126 @@ int main()
         ////glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         ////glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        float baseHeight = 0.01;
-        float width = 2;
-        float length = 10;
-
+        scene_manager(cube_array, alTogether, lightingShaderWithTexture);
         glm::mat4 model = glm::mat4(1.0f);
-        //Ground
-        model = transforamtion(-5, -0.01, -5, width * 5, baseHeight, length);
-        model = alTogether * model;
-        grass.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //float baseHeight = 0.01;
+        //float width = 2;
+        //float length = 10;
 
-        //road
-        model = transforamtion(-1, 0, -5, width, baseHeight, length);
-        model = alTogether * model;
-        road.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //glm::mat4 model = glm::mat4(1.0f);
+        ////Ground
+        //model = transforamtion(-5, -0.01, -5, width * 5, baseHeight, length);
+        //model = alTogether * model;
+        //grass.drawCubeWithTexture(lightingShaderWithTexture, model);
 
-        model = transforamtion(-1.4, 0, -5, width * .2, baseHeight * 10, length);
-        model = alTogether * model;
-        footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
-        model = transforamtion(1, 0, -5, width * .2, baseHeight * 10, length);
-        model = alTogether * model;
-        footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
-        model = transforamtion(-1.38, .1, -5, width * .18, baseHeight * .1, length);
-        model = alTogether * model;
-        footpath.drawCubeWithTexture(lightingShaderWithTexture, model);
-        model = transforamtion(1.02, .1, -5, width * .18, baseHeight * .1, length);
-        model = alTogether * model;
-        footpath.drawCubeWithTexture(lightingShaderWithTexture, model);
+        ////road
+        //model = transforamtion(-1, 0, -5, width, baseHeight, length);
+        //model = alTogether * model;
+        //road.drawCubeWithTexture(lightingShaderWithTexture, model);
+
+        //model = transforamtion(-1.4, 0, -5, width * .2, baseHeight * 10, length);
+        //model = alTogether * model;
+        //footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //model = transforamtion(1, 0, -5, width * .2, baseHeight * 10, length);
+        //model = alTogether * model;
+        //footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //model = transforamtion(-1.38, .1, -5, width * .18, baseHeight * .1, length);
+        //model = alTogether * model;
+        //footpath.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //model = transforamtion(1.02, .1, -5, width * .18, baseHeight * .1, length);
+        //model = alTogether * model;
+        //footpath.drawCubeWithTexture(lightingShaderWithTexture, model);
 
 
-        if (jump>=.02) {
-            rtime += deltaTime;
-            if (jump <= 1 && jumpup) {
-                jump = jump_velocity + 2.5 * rtime;
-            }
-            else if(jump > 1 && jumpup){
-                jumpup = false;
-                rtime = 0;
-                jump_velocity = 1;
-            }
-            else if (!jumpup) {
-                jump = jump_velocity - 2.5 * rtime;
-                cout << jump << endl;
-            }
-            
-        }
-        else {
-            jump = .01;
-            rtime = 0;
-            jumpup = true;
-        }
-        model = transforamtion(movelr, jump, movefr, .5, .5, .5);
-        model = alTogether * model;
-        player.drawCubeWithTexture(lightingShaderWithTexture, model);
-        
+        //if (jump>=.02) {
+        //    rtime += deltaTime;
+        //    if (jump <= 1 && jumpup) {
+        //        jump = jump_velocity + 2.5 * rtime;
+        //    }
+        //    else if(jump > 1 && jumpup){
+        //        jumpup = false;
+        //        rtime = 0;
+        //        jump_velocity = 1;
+        //    }
+        //    else if (!jumpup) {
+        //        jump = jump_velocity - 2.5 * rtime;
+        //        cout << jump << endl;
+        //    }
+        //    
+        //}
+        //else {
+        //    jump = .01;
+        //    rtime = 0;
+        //    jumpup = true;
+        //}
+        //model = transforamtion(movelr, jump, movefr, .5, .5, .5);
+        //model = alTogether * model;
+        //player.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //
 
-        //building
-        for (int i = 0;i < 3;i++) {
-            model = transforamtion(-4.4, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
-            model = alTogether * model;
-            b1.drawCubeWithTexture(lightingShaderWithTexture, model);
-            model = transforamtion(2.6, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
-            model = alTogether * model;
-            b1.drawCubeWithTexture(lightingShaderWithTexture, model);
-        }
+        ////building
+        //for (int i = 0;i < 3;i++) {
+        //    model = transforamtion(-4.4, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
+        //    model = alTogether * model;
+        //    b1.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //    model = transforamtion(2.6, 0, -5 + i * 3.5, width, baseHeight * 500, length * .25);
+        //    model = alTogether * model;
+        //    b1.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //}
 
-        //pool
-        for (int i = 0; i < 4; i++) {
-            model = transforamtion(1.5, 0, 4.5 - i * 3, .05, 2, .05);
-            model = alTogether * model;
-            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
-        }
-        for (int i = 0; i < 4; i++) {
-            model = transforamtion(-1.5, 0, 4.5 - i * 3, .05, 2, .05);
-            model = alTogether * model;
-            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
-        }
-        for (int i = 0; i < 4; i++) {
-            model = transforamtion(1.5, 1.95, 4.5 - i * 3, -.95, .05, .05);
-            model = alTogether * model;
-            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
-        }
-        for (int i = 0; i < 4; i++) {
-            model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
-            model = alTogether * model;
-            pool.drawCubeWithTexture(lightingShaderWithTexture, model);
-        }
-        for (int i = 0;i < 3;i++) {
-            for (int j = 0; j < 3; j++) {
-                model = transforamtion(-2.4, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
-                model = alTogether * model;
-                win.drawCubeWithTexture(lightingShaderWithTexture, model);
-                //ourShader.setMat4("model", model);
-                //if (pointlightToggle) {
-                //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
-                //}
-                //else {
-                //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
-                //}
-                //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            }
+        ////pool
+        //for (int i = 0; i < 4; i++) {
+        //    model = transforamtion(1.5, 0, 4.5 - i * 3, .05, 2, .05);
+        //    model = alTogether * model;
+        //    pool.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //}
+        //for (int i = 0; i < 4; i++) {
+        //    model = transforamtion(-1.5, 0, 4.5 - i * 3, .05, 2, .05);
+        //    model = alTogether * model;
+        //    pool.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //}
+        //for (int i = 0; i < 4; i++) {
+        //    model = transforamtion(1.5, 1.95, 4.5 - i * 3, -.95, .05, .05);
+        //    model = alTogether * model;
+        //    pool.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //}
+        //for (int i = 0; i < 4; i++) {
+        //    model = transforamtion(-1.5, 1.95, 4.5 - i * 3, 1, .05, .05);
+        //    model = alTogether * model;
+        //    pool.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //}
+        //for (int i = 0;i < 3;i++) {
+        //    for (int j = 0; j < 3; j++) {
+        //        model = transforamtion(-2.4, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+        //        model = alTogether * model;
+        //        win.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //        //ourShader.setMat4("model", model);
+        //        //if (pointlightToggle) {
+        //        //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+        //        //}
+        //        //else {
+        //        //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+        //        //}
+        //        //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        //    }
 
-        }
-        for (int i = 0;i < 3;i++) {
-            for (int j = 0; j < 3; j++) {
-                model = transforamtion(2.59, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
-                model = alTogether * model;
-                win.drawCubeWithTexture(lightingShaderWithTexture, model);
-                //ourShader.setMat4("model", model);
-                //if (pointlightToggle) {
-                //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
-                //}
-                //else {
-                //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
-                //}
+        //}
+        //for (int i = 0;i < 3;i++) {
+        //    for (int j = 0; j < 3; j++) {
+        //        model = transforamtion(2.59, .5 + j * 1.5, -3.95 + i * 3.5, .01, .8, .5);
+        //        model = alTogether * model;
+        //        win.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //        //ourShader.setMat4("model", model);
+        //        //if (pointlightToggle) {
+        //        //    ourShader.setVec3("color", glm::vec3(0.722, 0.71, 0.161));
+        //        //}
+        //        //else {
+        //        //    ourShader.setVec3("color", glm::vec3(0.122, 0.118, 0.035));
+        //        //}
 
-                //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            }
-        }
+        //        //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        //    }
+        //}
 
         //// also draw the lamp object(s)
         ourShader.use();
