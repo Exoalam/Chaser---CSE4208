@@ -21,6 +21,7 @@
 #include <iostream>
 #include "cube.h"
 #include "stb_image.h"
+#include "CurvedRoad.h"
 
 using namespace std;
 
@@ -33,8 +34,8 @@ void drawCube(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model, floa
 void scene(Cube cube, Shader& lightingShaderWithTexture, glm::mat4 alTogether);
 
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 900;
 
 // modelling transform
 float rotateAngle_X = 0.0;
@@ -440,10 +441,25 @@ int main()
 
     // render loop
     // -----------
+    glm::mat4 rotateXMatrix, rotateYMatrix, rotateZMatrix;
+    glm::mat4 identityMatrix = glm::mat4(1.0f);
+    rotateXMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_X), glm::vec3(1.0f, 0.0f, 0.0f));
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_Y), glm::vec3(0.0f, 1.0f, 0.0f));
+    rotateZMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_Z), glm::vec3(0.0f, 0.0f, 1.0f));
     SpotLight spotlight[8];
     PointLight pointlight[9];
     PointLight pointlight2[9];
     Sphere sphere = Sphere();
+    rotateXMatrix = glm::rotate(identityMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 model = transforamtion(0, 0, -9, 1, 1, 1) * rotateXMatrix;
+    glm::vec3 p0(0, 5, 0);
+    glm::vec3 p1(0, 2, 0);
+    glm::vec3 p2(0, 0, 0);
+    glm::vec3 p3(0, -3, 0);
+    int numSegments = 1000;
+    float roadWidth = 1.0f;
+
+    CurvedRoad cr(model, sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -603,10 +619,13 @@ int main()
         model = alTogether * model;
         cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
         scene_manager(cube_array, alTogether, lightingShaderWithTexture);
-        alTogether = transforamtion(0, 0, -11, 1, 1, 1);
-        scene_manager(cube_array, alTogether, lightingShaderWithTexture);
-        
+        //alTogether = transforamtion(0, 0, -11, 1, 1, 1);
+        //scene_manager(cube_array, alTogether, lightingShaderWithTexture);
+        //
+        //model = transforamtion(0, 0, 0, 1, 1, 1);
 
+        
+        cr.draw(lightingShaderWithTexture);
         
         //// also draw the lamp object(s)
         ourShader.use();
