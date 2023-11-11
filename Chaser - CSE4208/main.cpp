@@ -23,6 +23,7 @@
 #include "stb_image.h"
 #include "CurvedRoad.h"
 #include "Tunnel.h"
+#include "Pyramid.h"
 
 using namespace std;
 
@@ -454,8 +455,8 @@ int main()
     rotateXMatrix = glm::rotate(identityMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     glm::mat4 model = transforamtion(0, 0, -9, 1, 1, 1) * rotateXMatrix;
     glm::vec3 p0(0, 5, 0);
-    glm::vec3 p1(0, 2, 0);
-    glm::vec3 p2(0, 0, 0);
+    glm::vec3 p1(1, 2, 0);
+    glm::vec3 p2(2, 0, 0);
     glm::vec3 p3(0, -3, 0);
     int numSegments = 1000;
     float roadWidth = 1.0f;
@@ -469,6 +470,13 @@ int main()
 
     // In your render loop
     
+    glm::mat4 pyramidTransform = transforamtion(0, 5, 0, 5, 5, 5);
+    std::string texturePath = df2path;
+
+    Pyramid pyramid(pyramidTransform, texturePath);
+
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    Pyramid pyramid2(pyramidTransform* rotateYMatrix, texturePath);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -638,7 +646,10 @@ int main()
         cr.draw(lightingShaderWithTexture);
 
         tunnel.draw(lightingShaderWithTexture);
-        
+
+        pyramid.draw(lightingShaderWithTexture);
+
+        pyramid2.draw(lightingShaderWithTexture);
         //// also draw the lamp object(s)
         ourShader.use();
         ourShader.setMat4("projection", projection);
