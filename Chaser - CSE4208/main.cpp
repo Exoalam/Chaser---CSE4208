@@ -453,7 +453,7 @@ int main()
     PointLight pointlight2[9];
     Sphere sphere = Sphere();
     rotateXMatrix = glm::rotate(identityMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 model = transforamtion(0, 0, -9, 1, 1, 1) * rotateXMatrix;
+    glm::mat4 model = transforamtion(5, 0, -15, 1, 1, 1) * rotateXMatrix;
     glm::vec3 p0(0, 5, 0);
     glm::vec3 p1(1, 2, 0);
     glm::vec3 p2(2, 0, 0);
@@ -462,9 +462,9 @@ int main()
     float roadWidth = 1.0f;
     CurvedRoad cr(model, sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
 
-    model = transforamtion(0, 0, -9, 1, 1, 1);
-    Tunnel tunnel(model * rotateXMatrix, sroadpath, p0, p1, p2, p3,
-        1000, 2.0f, 16);
+    model = transforamtion(5, 0, -15, 1, 1, 1);
+    Tunnel tunnel(model * rotateXMatrix, "Textures/tunnel.png", p0, p1, p2, p3,
+        1000, 1.5f, 16);
 
     // In your render loop
     
@@ -640,14 +640,16 @@ int main()
         //
         //model = transforamtion(0, 0, 0, 1, 1, 1);
 
+        model = transforamtion(5, -0.02, -20, 10, .01, 10);
+        footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
         
         cr.draw(lightingShaderWithTexture);
 
         tunnel.draw(lightingShaderWithTexture);
 
-        pyramid.draw(lightingShaderWithTexture);
+        //pyramid.draw(lightingShaderWithTexture);
 
-        pyramid2.draw(lightingShaderWithTexture);
+        //pyramid2.draw(lightingShaderWithTexture);
         //// also draw the lamp object(s)
         ourShader.use();
         ourShader.setMat4("projection", projection);
