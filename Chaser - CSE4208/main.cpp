@@ -22,6 +22,7 @@
 #include "cube.h"
 #include "stb_image.h"
 #include "CurvedRoad.h"
+#include "Tunnel.h"
 
 using namespace std;
 
@@ -458,8 +459,17 @@ int main()
     glm::vec3 p3(0, -3, 0);
     int numSegments = 1000;
     float roadWidth = 1.0f;
-
     CurvedRoad cr(model, sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
+
+    model = glm::mat4(1.0f);
+    Tunnel tunnel(model, sfpath,
+        glm::vec3(0, 3, 0), glm::vec3(1, 2, 0),
+        glm::vec3(2, -1, 0), glm::vec3(3, 0, 0),
+        1000, 0.5f, 16);
+
+    // In your render loop
+    
+
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -626,6 +636,8 @@ int main()
 
         
         cr.draw(lightingShaderWithTexture);
+
+        tunnel.draw(lightingShaderWithTexture);
         
         //// also draw the lamp object(s)
         ourShader.use();

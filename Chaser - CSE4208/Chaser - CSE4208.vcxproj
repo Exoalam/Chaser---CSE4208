@@ -136,6 +136,7 @@
     <ClCompile Include="CurvedRoad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Tunnel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic_camera.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Tunnel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.fs" />
