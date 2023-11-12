@@ -25,6 +25,7 @@
 #include "Tunnel.h"
 #include "Pyramid.h"
 #include "Skybox.h"
+#include "Cylinder.h"
 
 using namespace std;
 
@@ -534,6 +535,7 @@ int main()
 
     Skybox skybox(dawnFaces, duskFaces);
   
+    Cylinder cylinder(.15, .1, 2, 16, 20, dfpath);
     while (!glfwWindowShouldClose(window))
     {
         
@@ -710,6 +712,7 @@ int main()
         tunnel2.draw(lightingShaderWithTexture);
         model = transforamtion(0, 0, 0, 1, 1, 1);
         tree(pyramid, lightingShaderWithTexture, model);
+        cylinder.Draw(lightingShaderWithTexture, model);
         //pyramid.draw(lightingShaderWithTexture);
 
         //pyramid2.draw(lightingShaderWithTexture);
