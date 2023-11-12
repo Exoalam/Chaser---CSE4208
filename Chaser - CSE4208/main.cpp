@@ -26,6 +26,7 @@
 #include "Pyramid.h"
 #include "Skybox.h"
 #include "Cylinder.h"
+#include "CubeFollower.h"
 
 using namespace std;
 
@@ -173,6 +174,7 @@ void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
         pyramid.draw(shader);
         pyramid.setTransform(model * rotateYMatrix * goaround);
         pyramid.draw(shader);
+        
     }
 
 
@@ -276,6 +278,7 @@ void scene_manager(Cube cube[], glm::mat4 alTogether, Shader lightingShaderWithT
     }
 
 }
+
 
 int main()
 {
@@ -536,6 +539,7 @@ int main()
     Skybox skybox(dawnFaces, duskFaces);
   
     Cylinder cylinder(.15, .1, 1, 16, 20, "Textures/treebase.png");
+
     while (!glfwWindowShouldClose(window))
     {
         
@@ -684,7 +688,6 @@ int main()
             }
             else if (!jumpup) {
                 jump = jump_velocity - 2.5 * rtime;
-                cout << jump << endl;
             }
 
         }
@@ -694,8 +697,14 @@ int main()
             jumpup = true;
         }
         //model = transforamtion(movelr, jump, movefr, .5, .5, .5);
-        model = transforamtion(camera.Position.x, jump, camera.Position.z-3, .5, .5, .5);
-        model = alTogether * model;
+        float playerx = camera.Position.x;
+        if (playerx < -1)
+            playerx = -1;
+        if (playerx > .5f)
+            playerx = .5;
+        model = transforamtion(playerx, jump, camera.Position.z-3, .5, .5, .5);
+        //model = transforamtion(0, jump, 10, .5, .5, .5);
+        //model *=  cubefollower.update(deltaTime/20);
         cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
         scene_manager(cube_array, alTogether, lightingShaderWithTexture);
         //alTogether = transforamtion(0, 0, -11, 1, 1, 1);
