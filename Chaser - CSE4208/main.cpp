@@ -535,7 +535,7 @@ int main()
 
     Skybox skybox(dawnFaces, duskFaces);
   
-    Cylinder cylinder(.15, .1, 2, 16, 20, "Textures/treebase.png");
+    Cylinder cylinder(.15, .1, 1, 16, 20, "Textures/treebase.png");
     while (!glfwWindowShouldClose(window))
     {
         
@@ -710,9 +710,12 @@ int main()
         cr2.draw(lightingShaderWithTexture);
         tunnel.draw(lightingShaderWithTexture);
         tunnel2.draw(lightingShaderWithTexture);
-        model = transforamtion(0, 0, 0, 1, 1, 1);
-        tree(pyramid, lightingShaderWithTexture, model);
-        cylinder.Draw(lightingShaderWithTexture, model);
+        for (int i = 0; i < 25; i+=2) {
+            model = transforamtion(-10, 0, -30 + i, 1, 1, 1);
+            tree(pyramid, lightingShaderWithTexture, model);
+            cylinder.Draw(lightingShaderWithTexture, model);
+        }
+
 
         ourShader.use();
         ourShader.setMat4("projection", projection);
