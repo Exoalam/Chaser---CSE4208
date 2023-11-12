@@ -535,7 +535,7 @@ int main()
 
     Skybox skybox(dawnFaces, duskFaces);
   
-    Cylinder cylinder(.15, .1, 2, 16, 20, dfpath);
+    Cylinder cylinder(.15, .1, 2, 16, 20, "Textures/treebase.png");
     while (!glfwWindowShouldClose(window))
     {
         
@@ -713,10 +713,6 @@ int main()
         model = transforamtion(0, 0, 0, 1, 1, 1);
         tree(pyramid, lightingShaderWithTexture, model);
         cylinder.Draw(lightingShaderWithTexture, model);
-        //pyramid.draw(lightingShaderWithTexture);
-
-        //pyramid2.draw(lightingShaderWithTexture);
-        //// also draw the lamp object(s)
 
         ourShader.use();
         ourShader.setMat4("projection", projection);
