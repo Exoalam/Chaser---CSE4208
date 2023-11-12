@@ -136,6 +136,7 @@
     <ClCompile Include="CurvedRoad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Pyramid.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Tunnel.cpp" />
   </ItemGroup>
@@ -147,6 +148,7 @@
     <ClInclude Include="pointLight.h" />
     <ClInclude Include="Pyramid.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="stb_image.h" />
@@ -156,6 +158,8 @@
     <None Include="fragmentShader.fs" />
     <None Include="fragmentShaderForPhongShading.fs" />
     <None Include="fragmentShaderForPhongShadingWithTexture.fs" />
+    <None Include="skyboxshader.fs" />
+    <None Include="skyboxvshader.vs" />
     <None Include="vertexShader.vs" />
     <None Include="vertexShaderForPhongShading.vs" />
     <None Include="vertexShaderForPhongShadingWithTexture.vs" />

@@ -56,6 +56,7 @@ void Tunnel::init() {
 
 void Tunnel::draw(Shader& shader) {
     shader.use();
+    
     glBindVertexArray(VAO);
 
     glActiveTexture(GL_TEXTURE0);
@@ -115,8 +116,8 @@ void Tunnel::createMesh() {
 
             glm::vec3 normal = glm::normalize(glm::cross(forward, localPoint));
 
-            float texCoordY = i / static_cast<float>(curvePoints.size() - 1);
-            float texCoordX = j / static_cast<float>(circlePoints);
+            float texCoordY = i / static_cast<float>(curvePoints.size() - 1) *10;
+            float texCoordX = j / static_cast<float>(circlePoints) *10;
 
             // First triangle of the quad
             vertices.push_back({ worldPoint, normal, {texCoordX, texCoordY} });

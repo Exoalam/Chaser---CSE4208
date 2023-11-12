@@ -84,6 +84,10 @@ void Pyramid::draw(Shader& shader) {
     glBindVertexArray(0);
 }
 
+void Pyramid::setTransform(glm::mat4 model) {
+    modelMatrix = model;
+}
+
 GLuint Pyramid::loadTexture(const std::string& filename) {
     GLuint textureID;
     glGenTextures(1, &textureID);

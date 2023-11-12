@@ -11,6 +11,7 @@ public:
     ~Pyramid();
 
     void draw(Shader& shader);
+    void setTransform(glm::mat4 model);
 
 private:
     GLuint VAO, VBO, texture;
@@ -22,6 +23,7 @@ private:
 
     // Load texture
     GLuint loadTexture(const std::string& filename);
+    
 };
 
 #endif // PYRAMID_H

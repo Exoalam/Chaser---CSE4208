@@ -24,6 +24,7 @@
 #include "CurvedRoad.h"
 #include "Tunnel.h"
 #include "Pyramid.h"
+#include "Skybox.h"
 
 using namespace std;
 
@@ -142,6 +143,38 @@ glm::mat4 transforamtion(float tx, float ty, float tz,float sx, float sy, float 
     scaleMatrix = glm::scale(identityMatrix, glm::vec3(sx, sy, sz));
     model = translateMatrix * scaleMatrix * rotateXMatrix * rotateYMatrix * rotateZMatrix;
     return model;
+}
+
+void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
+    glm::mat4 model, identityMatrix, rotateYMatrix, goaround;
+    for (int i = 0; i < 360; i += 30) {
+
+        identityMatrix = glm::mat4(1.0f);
+        goaround = glm::rotate(identityMatrix, glm::radians(float(i)), glm::vec3(0.0f, 1.0f, 0.0f));
+        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = model1 * transforamtion(0, 1, 0, 1, 1, 1);
+        pyramid.setTransform(model * goaround);
+        pyramid.draw(shader);
+        pyramid.setTransform(model * rotateYMatrix * goaround);
+        pyramid.draw(shader);
+        model = model1 * transforamtion(0, 1.5, 0, .7, .7, .7);
+        pyramid.setTransform(model * goaround);
+        pyramid.draw(shader);
+        pyramid.setTransform(model * rotateYMatrix * goaround);
+        pyramid.draw(shader);
+        model = model1 * transforamtion(0, 2, 0, .4, .4, .4);
+        pyramid.setTransform(model * goaround);
+        pyramid.draw(shader);
+        pyramid.setTransform(model * rotateYMatrix * goaround);
+        pyramid.draw(shader);
+        model = model1 * transforamtion(0, 2.3, 0, .2, .2, .2);
+        pyramid.setTransform(model * goaround);
+        pyramid.draw(shader);
+        pyramid.setTransform(model * rotateYMatrix * goaround);
+        pyramid.draw(shader);
+    }
+
+
 }
 
 
@@ -291,6 +324,12 @@ int main()
     Shader lightingShaderWithTexture("vertexShaderForPhongShadingWithTexture.vs", "fragmentShaderForPhongShadingWithTexture.fs");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
     //Shader lightingShader("vertexShaderForGouraudShading.vs", "fragmentShaderForGouraudShading.fs");
     Shader ourShader("vertexShader.vs", "fragmentShader.fs");
+    Shader skyboxShader("skyboxvshader.vs", "skyboxshader.fs");
+
+    // ... setup the rest of your application ...
+
+    // When drawing the skybox
+
 
 
     string droadpath = "Textures/road.png";
@@ -342,6 +381,12 @@ int main()
     unsigned int dplayer = loadTexture(dplayerpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     unsigned int splayer = loadTexture(splayerpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube player = Cube(dplayer, splayer, 32.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+
+    string forestgpath = "Textures/forestground.jpg";
+    unsigned int fgp = loadTexture(forestgpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube forestg = Cube(fgp, fgp, 32.0f, 0.0f, 0.0f, 10.0f, 10.0f);
+
+    string treepath = "Textures/tree.jpg";
 
     Cube cube_array[] = {grass, road, footpath, footpath2, player, b1, pool, win};
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -453,31 +498,45 @@ int main()
     PointLight pointlight2[9];
     Sphere sphere = Sphere();
     rotateXMatrix = glm::rotate(identityMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 model = transforamtion(5, 0, -15, 1, 1, 1) * rotateXMatrix;
+    glm::mat4 model = transforamtion(0, 0, -10, 1, 1, 1) * rotateXMatrix;
     glm::vec3 p0(0, 5, 0);
-    glm::vec3 p1(1, 2, 0);
-    glm::vec3 p2(2, 0, 0);
-    glm::vec3 p3(0, -3, 0);
+    glm::vec3 p1(0, 2, 0);
+    glm::vec3 p2(7, 0, 0);
+    glm::vec3 p3(7, -10, 0);
     int numSegments = 1000;
     float roadWidth = 1.0f;
     CurvedRoad cr(model, sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
 
-    model = transforamtion(5, 0, -15, 1, 1, 1);
-    Tunnel tunnel(model * rotateXMatrix, "Textures/tunnel.png", p0, p1, p2, p3,
-        1000, 1.5f, 16);
+    model = transforamtion(0, 0, -10, 1, 1, 1);
+    Tunnel tunnel(model * rotateXMatrix, "Textures/tunnel.jpg", p0, p1, p2, p3,
+        1000, 1.2f, 16);
+
+    p0 = glm::vec3(0, 5, 0);
+    p1 = glm::vec3(0, 2, 0);
+    p2 = glm::vec3(-7, 0, 0);
+    p3 = glm::vec3(-7, -10, 0);
+    model = transforamtion(7, 0, -25, 1, 1, 1) * rotateXMatrix;
+    CurvedRoad cr2(model, sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
+    model = transforamtion(7, 0, -25, 1, 1, 1);
+    Tunnel tunnel2(model* rotateXMatrix, "Textures/tunnel.jpg", p0, p1, p2, p3,
+        1000, 1.2f, 16);
 
     // In your render loop
     
     glm::mat4 pyramidTransform = transforamtion(0, 5, 0, 5, 5, 5);
-    std::string texturePath = df2path;
+    std::string texturePath = treepath;
 
     Pyramid pyramid(pyramidTransform, texturePath);
 
-    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    Pyramid pyramid2(pyramidTransform* rotateYMatrix, texturePath);
 
+    std::vector<std::string> dawnFaces = { "Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png" };
+    std::vector<std::string> duskFaces = { "Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png" };
+
+    Skybox skybox(dawnFaces, duskFaces);
+  
     while (!glfwWindowShouldClose(window))
     {
+        
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -490,31 +549,33 @@ int main()
 
         // render
         // ------
-        if (nightmode) {
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            //spotlightToggle = true;
-            //s_ambient = 1;
-            //s_diffuse = 1;
-            //s_specular = 1;
-            //pointlightToggle = true;
-            //p_ambient = 1;
-            //p_diffuse = 1;
-            //p_specular = 1;
-            //directionallightToggle = false;
-        }
-        else {
-            glClearColor(1, 0.996, 0.725,1);
-            //spotlightToggle = false;
-            //s_ambient = 0;
-            //s_diffuse = 0;
-            //s_specular = 0;
-            //pointlightToggle = false;
-            //p_ambient = 0;
-            //p_diffuse = 0;
-            //p_specular = 0;
-            //directionallightToggle = true;
-        }
-            
+        // Colors for dawn and dusk
+        glm::vec4 dawnColor(0.3f, 0.3f, 0.5f, 1.0f); // Soft blue
+        glm::vec4 duskColor(0.1f, 0.1f, 0.2f, 1.0f); // Darker blue
+
+        // Calculate the interpolation factor based on time
+        // Assuming 'time' is a float that goes from 0.0 at dawn to 1.0 at dusk
+        float time = (sin(glfwGetTime()) + 1.0f) / 2.0f; // Example time value that oscillates between 0 and 1
+
+        // Interpolate between dawn and dusk colors
+        glm::vec4 currentColor = dawnColor * (1.0f - time) + duskColor * time;
+
+        // Set the clear color using the current interpolated color
+        glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //glm::mat4 projection = glm::ortho(-2.0f, +2.0f, -1.5f, +1.5f, 0.1f, 100.0f);
+
+        // camera/view transformation
+        glm::mat4 view = camera.GetViewMatrix();
+        //glm::mat4 view = basic_camera.createViewMatrix();
+        //glDepthFunc(GL_LEQUAL);
+        //skyboxShader.setVec3("viewPos", camera.Position);
+        //skyboxShader.setMat4("view", view);
+        //skyboxShader.setMat4("projection", projection);
+        //float timeOfDay = .5f;
+        //skybox.Draw(skyboxShader, timeOfDay);
+        //glDepthFunc(GL_LESS);
+
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -576,12 +637,12 @@ int main()
         lightingShaderWithTexture.use();
         
         // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         //glm::mat4 projection = glm::ortho(-2.0f, +2.0f, -1.5f, +1.5f, 0.1f, 100.0f);
         lightingShaderWithTexture.setMat4("projection", projection);
 
         // camera/view transformation
-        glm::mat4 view = camera.GetViewMatrix();
+        //glm::mat4 view = camera.GetViewMatrix();
         //glm::mat4 view = basic_camera.createViewMatrix();
         lightingShaderWithTexture.setMat4("view", view);
 
@@ -640,17 +701,20 @@ int main()
         //
         //model = transforamtion(0, 0, 0, 1, 1, 1);
 
-        model = transforamtion(5, -0.02, -20, 10, .01, 10);
-        footpath2.drawCubeWithTexture(lightingShaderWithTexture, model);
+        model = transforamtion(-10, -0.02, -35, 20, .01, 30);
+        forestg.drawCubeWithTexture(lightingShaderWithTexture, model);
         
         cr.draw(lightingShaderWithTexture);
-
+        cr2.draw(lightingShaderWithTexture);
         tunnel.draw(lightingShaderWithTexture);
-
+        tunnel2.draw(lightingShaderWithTexture);
+        model = transforamtion(0, 0, 0, 1, 1, 1);
+        tree(pyramid, lightingShaderWithTexture, model);
         //pyramid.draw(lightingShaderWithTexture);
 
         //pyramid2.draw(lightingShaderWithTexture);
         //// also draw the lamp object(s)
+
         ourShader.use();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
@@ -698,8 +762,9 @@ int main()
         lightingShader.setVec3("direcLight.specular", d_s);
         lightingShader.setBool("dlighton", directionallightToggle);
         model = transforamtion(-5, 30, -30, 5, 5, 5);
-        Sphere sphere;
+
         sphere.drawSphere(lightingShader, model);
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
