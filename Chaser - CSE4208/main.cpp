@@ -539,6 +539,7 @@ int main()
     Skybox skybox(dawnFaces, duskFaces);
   
     Cylinder cylinder(.15, .1, 1, 16, 20, "Textures/treebase.png");
+    float run_time = 0;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -698,10 +699,11 @@ int main()
         }
         //model = transforamtion(movelr, jump, movefr, .5, .5, .5);
         float playerx = camera.Position.x;
-        if (playerx < -1)
-            playerx = -1;
-        if (playerx > .5f)
-            playerx = .5;
+        //if (playerx < -1)
+        //    playerx = -1;
+        //if (playerx > .5f)
+        //    playerx = .5;
+        
         model = transforamtion(playerx, jump, camera.Position.z-3, .5, .5, .5);
         //model = transforamtion(0, jump, 10, .5, .5, .5);
         //model *=  cubefollower.update(deltaTime/20);
@@ -781,6 +783,12 @@ int main()
         tree(pyramid, lightingShaderWithTexture, model);
         model = transforamtion(-.1, 4.5, -15, .5, .5, .5);
         cylinder.Draw(lightingShaderWithTexture, model);
+        run_time += deltaTime;
+        cout << int(run_time) % 5 << endl;
+        if (int(run_time) % 5 == 0) {
+            model = transforamtion(camera.Position.x, 1, camera.Position.z - 5, 1, 1, 1);
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
+        }
         ourShader.use();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
@@ -830,6 +838,8 @@ int main()
         model = transforamtion(-5, 30, -30, 5, 5, 5);
 
         sphere.drawSphere(lightingShader, model);
+
+        
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
