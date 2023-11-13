@@ -27,7 +27,6 @@
 #include "Skybox.h"
 #include "Cylinder.h"
 #include "CubeFollower.h"
-#include "Character.h"
 
 using namespace std;
 
@@ -152,6 +151,9 @@ glm::mat4 transforamtion(float tx, float ty, float tz,float sx, float sy, float 
     return model;
 }
 
+void character(Sphere &sphere, Cylinder &cylinder, Shader shader, glm::mat4 model) {
+}
+
 void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
     glm::mat4 model, identityMatrix, rotateYMatrix, goaround;
     for (int i = 0; i < 360; i += 30) {
@@ -183,28 +185,6 @@ void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
     }
 
 
-}
-void protagonistMoveManager(Character& protagonist, Shader& shaderMP, glm::mat4 revolve)
-{
-    glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), protagonistInitial, protagonistMove, protagonistAlTogether;
-
-    rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f));
-    protagonistInitial = glm::translate(identity, glm::vec3(protagonistXinitial, protagonistYinitial, protagonistZinitial));
-    protagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove));
-    protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
-
-    if (protagonistMovementForm == 0) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "still");
-    else if (protagonistMovementForm == 1) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "right");
-    else if (protagonistMovementForm == 2) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "left");
-
-
-    if (protagonistMovementForm != 0) protagonistMovementFormCounter++;
-    if (protagonistMovementFormCounter > 20 && protagonistMovementFormCounter < 40) protagonistMovementForm = 2;
-    else if (protagonistMovementFormCounter > 40) {
-        protagonistMovementForm = 0;
-        protagonistMovementFormCounter = 0;
-    }
 }
 
 
@@ -659,7 +639,6 @@ int main()
     glm::vec3 current_position3 = camera.Position;
     glm::mat4 current_mat1 = glm::mat4(1.0f);
     glm::mat4 current_mat3 = transforamtion(0, 0, 0, 1, 1, 1);
-    Character player2;
     while (!glfwWindowShouldClose(window))
     {
         
@@ -774,7 +753,12 @@ int main()
         //    playerx = -1;
         //if (playerx > .5f)
         //    playerx = .5;
-        
+        model = transforamtion(playerx, jump, camera.Position.z - 3, .5, .5, .5);
+        //cout << playerx << " " << playerz << endl;
+        //model = transforamtion(0, jump, 10, .5, .5, .5);
+        //model *=  cubefollower.update(deltaTime/20);
+        //cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
+        player.drawCubeWithTexture(lightingShaderWithTexture, model);
 
         //cout << "distance1: " << current_mat1[3][0]<<" " << current_mat1[3][1]<<" "<< current_mat1[3][2] << endl;
         if (current_position1.z - camera.Position.z > 22) {
@@ -837,14 +821,9 @@ int main()
         
         model = transforamtion(-5, 30, -30, 5, 5, 5);
         model = current_mat1 * model;
-        model = transforamtion(playerx, jump+1, camera.Position.z - 3, .5, .5, .5);
-        //cout << playerx << " " << playerz << endl;
-        //model = transforamtion(0, jump, 10, .5, .5, .5);
-        //model *=  cubefollower.update(deltaTime/20);
-        //cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
-        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = model * rotateYMatrix;
-        protagonistMoveManager(player2, lightingShader, model);
+
+
+        
         //sphere.drawSphere(lightingShader, model);
 
         
