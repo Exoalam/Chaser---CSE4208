@@ -73,6 +73,7 @@ float fuel_count = 10;
 float fuel_index = 4;
 float bonus_rotate = 0;
 vector<glm::vec3> fuel_tank = { glm::vec3(0.5, 1, 10), glm::vec3(0, 1, 0) };
+bool start_scene = true;
 
 // camera
 Camera camera(glm::vec3(0, .5f, 17.0f));
@@ -527,10 +528,12 @@ int main()
     string forestgpath = "Textures/forestground.jpg";
     unsigned int fgp = loadTexture(forestgpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube forestg = Cube(fgp, fgp, 32.0f, 0.0f, 0.0f, 10.0f, 10.0f);
-    string gaspath = "Textures/gas.jpg";
-    unsigned int ggp = loadTexture(gaspath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-    Cube gas = Cube(ggp, ggp, 32.0f, 0.0f, 0.0f, 1, 1);
-
+    string s1path = "Textures/s1.png";
+    unsigned int s1p = loadTexture(s1path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s1 = Cube(s1p, s1p, 32.0f, 0.0f, 0.0f, 1, 1);
+    string s2path = "Textures/s2.jpg";
+    unsigned int s2p = loadTexture(s2path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s2 = Cube(s2p, s2p, 32.0f, 0.0f, 0.0f, 1, 1);
     string treepath = "Textures/tree.jpg";
     string humanpath = "Textures/human.jpg";
     unsigned int hump = loadTexture(humanpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
@@ -722,14 +725,7 @@ int main()
 
         // Interpolate between dawn and dusk colors
         glm::vec4 currentColor = dawnColor * (1.0f - time) + duskColor * time;
-        fuel_count -= deltaTime;
-        if (fuel_count < 0) {
-            if (fuel_index > -1) {
-                fuel[fuel_index] = 0;
-                fuel_index--;
-            }
-            fuel_count = 5;
-        }
+
         // Set the clear color using the current interpolated color
         glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 30.0f);
@@ -813,133 +809,148 @@ int main()
         lightingShaderWithTexture.setFloat("emissionlight.k_q", .032);
         lightingShaderWithTexture.setVec3("emissionlight.emission", 0.2f, 0.2f, 0.2f);
         lightingShaderWithTexture.setBool("elighton", false);
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 alTogether = transforamtion(0, 0, 0, 1, 1, 1);
-        if (jump >= .02) {
-            rtime += deltaTime;
-            if (jump <= 1 && jumpup) {
-                jump = jump_velocity + 2.5 * rtime;
+        if (!start_scene) {
+            fuel_count -= deltaTime;
+            if (fuel_count < 0) {
+                if (fuel_index > -1) {
+                    fuel[fuel_index] = 0;
+                    fuel_index--;
+                }
+                fuel_count = 5;
             }
-            else if (jump > 1 && jumpup) {
-                jumpup = false;
+            glm::mat4 model = glm::mat4(1.0f);
+            glm::mat4 alTogether = transforamtion(0, 0, 0, 1, 1, 1);
+            if (jump >= .02) {
+                rtime += deltaTime;
+                if (jump <= 1 && jumpup) {
+                    jump = jump_velocity + 2.5 * rtime;
+                }
+                else if (jump > 1 && jumpup) {
+                    jumpup = false;
+                    rtime = 0;
+                    jump_velocity = 1;
+                }
+                else if (!jumpup) {
+                    jump = jump_velocity - 2.5 * rtime;
+                }
+
+            }
+            else {
+                jump = .01;
                 rtime = 0;
-                jump_velocity = 1;
+                jumpup = true;
             }
-            else if (!jumpup) {
-                jump = jump_velocity - 2.5 * rtime;
+            float playerx = camera.Position.x;
+            float playerz = camera.Position.z - 2;
+            //if (playerx < -1)
+            //    playerx = -1;
+            //if (playerx > .5f)
+            //    playerx = .5;
+            model = transforamtion(playerx, jump, playerz, 2, 2, 2);
+            //cout << playerx << " " << playerz << endl;
+            //model = transforamtion(0, jump, 10, .5, .5, .5);
+            //model *=  cubefollower.update(deltaTime/20);
+            //cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
+            //player.drawCubeWithTexture(lightingShaderWithTexture, model);
+            model = transforamtion(0, .2, 0, 1, 1, 1) * model;
+            protagonist(player_head, playerc, lightingShaderWithTexture, model);
+
+            //cout << "distance1: " << current_mat1[3][0]<<" " << current_mat1[3][1]<<" "<< current_mat1[3][2] << endl;
+            if (current_position1.z - camera.Position.z > 22) {
+                current_mat1 *= transforamtion(0, 0, -50, 1, 1, 1);
+                current_position1 = camera.Position - glm::vec3(0, 0, 40);
             }
+            if (current_position3.z - camera.Position.z > 52) {
+                current_mat3 *= transforamtion(0, 0, -50, 1, 1, 1);
+                current_position3 = camera.Position;
+            }
+            scene_manager(cube_array, current_mat1, lightingShaderWithTexture);
+            SceneManager2(lightingShaderWithTexture, current_mat3, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
+            ourShader.use();
+            ourShader.setMat4("projection", projection);
+            ourShader.setMat4("view", view);
 
-        }
-        else {
-            jump = .01;
-            rtime = 0;
-            jumpup = true;
-        }
-        float playerx = camera.Position.x;
-        float playerz = camera.Position.z-2;
-        //if (playerx < -1)
-        //    playerx = -1;
-        //if (playerx > .5f)
-        //    playerx = .5;
-        model = transforamtion(playerx, jump, playerz, 2, 2, 2);
-        //cout << playerx << " " << playerz << endl;
-        //model = transforamtion(0, jump, 10, .5, .5, .5);
-        //model *=  cubefollower.update(deltaTime/20);
-        //cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
-        //player.drawCubeWithTexture(lightingShaderWithTexture, model);
-        model = transforamtion(0, .2, 0, 1, 1, 1) * model;
-        protagonist(player_head, playerc, lightingShaderWithTexture, model);
+            //// we now draw as many light bulbs as we have point lights.
+            glBindVertexArray(lightCubeVAO);
+            for (unsigned int i = 0; i < 4; i++)
+            {
+                model = transforamtion(.5, 1.95, 4.5 - i * 3, .05, .05, .05);
+                model = current_mat1 * model;
+                ourShader.setMat4("model", model);
+                if (spotlightToggle) {
+                    ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+                }
+                else {
+                    ourShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
+                }
 
-        //cout << "distance1: " << current_mat1[3][0]<<" " << current_mat1[3][1]<<" "<< current_mat1[3][2] << endl;
-        if (current_position1.z - camera.Position.z > 22) {
-            current_mat1 *= transforamtion(0, 0, -50, 1, 1, 1);
-            current_position1 = camera.Position-glm::vec3(0,0,40);
-        }
-        if (current_position3.z - camera.Position.z > 52) {
-            current_mat3 *= transforamtion(0, 0, -50, 1, 1, 1);
-            current_position3 = camera.Position;
-        }
-        scene_manager(cube_array,current_mat1, lightingShaderWithTexture);
-        SceneManager2(lightingShaderWithTexture, current_mat3, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
-        ourShader.use();
-        ourShader.setMat4("projection", projection);
-        ourShader.setMat4("view", view);
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+                model = transforamtion(-.5, 1.95, 4.5 - i * 3, .05, .05, .05);
+                model = current_mat1 * model;
+                ourShader.setMat4("model", model);
+                if (spotlightToggle) {
+                    ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
+                }
+                else {
+                    ourShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
+                }
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+                //glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+            for (int i = -2; i < 3; i++) {
+                model = transforamtion(playerx + i * .1, jump + 1, playerz, .05, .05, .05);;
+                ourShader.setMat4("model", model);
+                if (fuel[i + 2] == 1) {
+                    ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
+                }
+                else {
+                    ourShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+                }
 
-        //// we now draw as many light bulbs as we have point lights.
-        glBindVertexArray(lightCubeVAO);
-        for (unsigned int i = 0; i < 4; i++)
-        {
-            model = transforamtion(.5, 1.95, 4.5 - i * 3, .05, .05, .05);
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+            model = transforamtion(fuel_tank[0][0], fuel_tank[0][1], fuel_tank[0][2], .2, .5, .2);
+            model = model * self_rotate(glm::vec3(-.5, 0, -.5));
             model = current_mat1 * model;
             ourShader.setMat4("model", model);
-            if (spotlightToggle){
-                ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
-            }
-            else {
-                ourShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
-            }
-            
+            ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            model = transforamtion(-.5, 1.95, 4.5 - i * 3, .05, .05, .05);
+
+            model = transforamtion(fuel_tank[1][0], fuel_tank[1][1], fuel_tank[1][2], .2, .5, .2);
+            model = model * self_rotate(glm::vec3(-.5, 0, -.5));
             model = current_mat1 * model;
             ourShader.setMat4("model", model);
-            if (spotlightToggle) {
-                ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
-            }
-            else {
-                ourShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
-            }
+            ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            //glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-        for (int i = -2; i < 3; i++) {
-            model = transforamtion(playerx+i*.1, jump+1, playerz, .05, .05, .05);;
-            ourShader.setMat4("model", model);
-            if (fuel[i + 2] == 1) {
-                ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-            }
-            else {
-                ourShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
-            }
-            
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        }
-        model = transforamtion(fuel_tank[0][0], fuel_tank[0][1], fuel_tank[0][2], .2, .5, .2);
-        model = model * self_rotate(glm::vec3(-.5, 0, -.5));
-        model = current_mat1 * model;
-        ourShader.setMat4("model", model);
-        ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-        model = transforamtion(fuel_tank[1][0], fuel_tank[1][1], fuel_tank[1][2], .2, .5, .2);
-        model = model * self_rotate(glm::vec3(-.5, 0, -.5));
-        model = current_mat1 * model;
-        ourShader.setMat4("model", model);
-        ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        
-        for (auto a : fuel_tank) {
-            if (glm::distance(camera.Position.z, a.z) < 2 and glm::distance(camera.Position.z, a.z) > 1.8 and glm::distance(camera.Position.x, a.x)<.1) {
-                if (fuel_index < 4) {
-                    fuel_index++;
-                    fuel[fuel_index] = 1;
-                    cout << "Refilled" << endl;
+            for (auto a : fuel_tank) {
+                if (glm::distance(camera.Position.z, a.z) < 2 and glm::distance(camera.Position.z, a.z) > 1.8 and glm::distance(camera.Position.x, a.x) < .1) {
+                    if (fuel_index < 4) {
+                        fuel_index++;
+                        fuel[fuel_index] = 1;
+                        cout << "Refilled" << endl;
+                    }
                 }
             }
-        }
-        lightingShader.use();
-        lightingShader.setVec3("viewPos", camera.Position);
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
-        lightingShader.setVec3("direcLight.direction", 0.5f, -3.0f, -3.0f);
-        lightingShader.setVec3("direcLight.ambient", d_a);
-        lightingShader.setVec3("direcLight.diffuse", d_d);
-        lightingShader.setVec3("direcLight.specular", d_s);
-        lightingShader.setBool("dlighton", directionallightToggle);
-        
-        model = transforamtion(-5, 30, -30, 5, 5, 5);
-        model = current_mat1 * model;
+            lightingShader.use();
+            lightingShader.setVec3("viewPos", camera.Position);
+            lightingShader.setMat4("projection", projection);
+            lightingShader.setMat4("view", view);
+            lightingShader.setVec3("direcLight.direction", 0.5f, -3.0f, -3.0f);
+            lightingShader.setVec3("direcLight.ambient", d_a);
+            lightingShader.setVec3("direcLight.diffuse", d_d);
+            lightingShader.setVec3("direcLight.specular", d_s);
+            lightingShader.setBool("dlighton", directionallightToggle);
 
+            model = transforamtion(-5, 30, -30, 5, 5, 5);
+            model = current_mat1 * model;
+       }
+       else {
+           glm::mat4 model = transforamtion(camera.Position.x-2.5, camera.Position.y, camera.Position.z - 7, 5,1,.1);
+           s1.drawCubeWithTexture(lightingShaderWithTexture, model);
+           model = transforamtion(camera.Position.x-1, camera.Position.y-1, camera.Position.z - 7, 2, .5, .1);
+           s2.drawCubeWithTexture(lightingShaderWithTexture, model);
+       }
 
         
         //sphere.drawSphere(lightingShader, model);
@@ -997,6 +1008,9 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
         walk = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+        start_scene = false;
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         camera.ProcessKeyboard(UP, deltaTime);
