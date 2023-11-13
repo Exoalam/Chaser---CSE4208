@@ -27,6 +27,7 @@
 #include "Skybox.h"
 #include "Cylinder.h"
 #include "CubeFollower.h"
+#include "Character.h"
 
 using namespace std;
 
@@ -70,6 +71,10 @@ float jump = .01;
 float jump_velocity = 0;
 float rtime = 0;
 bool jumpup = true;
+float protagonistZmove = 0.0f, protagonistXmove = 0.0f, protagonistYmove = 0.0f;
+float protagonistXinitial = 0, protagonistYinitial = 0, protagonistZinitial = 0;
+int protagonistMovementForm = 0, protagonistMovementFormCounter = 0;
+
 // camera
 Camera camera(glm::vec3(0, 1.1f, 17.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -178,6 +183,28 @@ void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
     }
 
 
+}
+void protagonistMoveManager(Character& protagonist, Shader& shaderMP, glm::mat4 revolve)
+{
+    glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), protagonistInitial, protagonistMove, protagonistAlTogether;
+
+    rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f));
+    protagonistInitial = glm::translate(identity, glm::vec3(protagonistXinitial, protagonistYinitial, protagonistZinitial));
+    protagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove));
+    protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
+
+    if (protagonistMovementForm == 0) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "still");
+    else if (protagonistMovementForm == 1) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "right");
+    else if (protagonistMovementForm == 2) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "left");
+
+
+    if (protagonistMovementForm != 0) protagonistMovementFormCounter++;
+    if (protagonistMovementFormCounter > 20 && protagonistMovementFormCounter < 40) protagonistMovementForm = 2;
+    else if (protagonistMovementFormCounter > 40) {
+        protagonistMovementForm = 0;
+        protagonistMovementFormCounter = 0;
+    }
 }
 
 
@@ -593,7 +620,7 @@ int main()
     SpotLight spotlight[8];
     PointLight pointlight[9];
     PointLight pointlight2[9];
-    Sphere sphere = Sphere();
+    //Sphere sphere = Sphere();
     glm::vec3 p0(0, 5, 0);
     glm::vec3 p1(0, 2, 0);
     glm::vec3 p2(7, 0, 0);
@@ -632,6 +659,7 @@ int main()
     glm::vec3 current_position3 = camera.Position;
     glm::mat4 current_mat1 = glm::mat4(1.0f);
     glm::mat4 current_mat3 = transforamtion(0, 0, 0, 1, 1, 1);
+    Character player2;
     while (!glfwWindowShouldClose(window))
     {
         
@@ -747,11 +775,7 @@ int main()
         //if (playerx > .5f)
         //    playerx = .5;
         
-        model = transforamtion(playerx, jump, camera.Position.z-3, .5, .5, .5);
-        //cout << playerx << " " << playerz << endl;
-        //model = transforamtion(0, jump, 10, .5, .5, .5);
-        //model *=  cubefollower.update(deltaTime/20);
-        cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
+
         //cout << "distance1: " << current_mat1[3][0]<<" " << current_mat1[3][1]<<" "<< current_mat1[3][2] << endl;
         if (current_position1.z - camera.Position.z > 22) {
             current_mat1 *= transforamtion(0, 0, -50, 1, 1, 1);
@@ -813,7 +837,15 @@ int main()
         
         model = transforamtion(-5, 30, -30, 5, 5, 5);
         model = current_mat1 * model;
-        sphere.drawSphere(lightingShader, model);
+        model = transforamtion(playerx, jump+1, camera.Position.z - 3, .5, .5, .5);
+        //cout << playerx << " " << playerz << endl;
+        //model = transforamtion(0, jump, 10, .5, .5, .5);
+        //model *=  cubefollower.update(deltaTime/20);
+        //cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
+        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = model * rotateYMatrix;
+        protagonistMoveManager(player2, lightingShader, model);
+        //sphere.drawSphere(lightingShader, model);
 
         
 
@@ -876,15 +908,34 @@ void processInput(GLFWwindow* window)
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.ProcessKeyboard(FORWARD, deltaTime);
+        protagonistZmove -= (camera.MovementSpeed * deltaTime);
+        if (protagonistMovementFormCounter == 0) {
+            protagonistMovementForm = 1;
+        }
     }
+
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         camera.ProcessKeyboard(BACKWARD, deltaTime);
+        protagonistZmove += (camera.MovementSpeed * deltaTime);
+        if (protagonistMovementFormCounter == 0) {
+            protagonistMovementForm = 1;
+        }
     }
+
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         camera.ProcessKeyboard(LEFT, deltaTime);
+        protagonistXmove -= (camera.MovementSpeed * deltaTime);
+        if (protagonistMovementFormCounter == 0) {
+            protagonistMovementForm = 1;
+        }
     }
+
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
+        protagonistXmove += (camera.MovementSpeed * deltaTime);
+        if (protagonistMovementFormCounter == 0) {
+            protagonistMovementForm = 1;
+        }
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         camera.ProcessKeyboard(UP, deltaTime);

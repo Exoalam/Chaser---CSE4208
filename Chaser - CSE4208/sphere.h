@@ -30,7 +30,7 @@ public:
     glm::vec3 specular;
     float shininess;
     // ctor/dtor
-    Sphere(float radius = 1.0f, int sectorCount = 36, int stackCount = 18, glm::vec3 amb = glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3 diff = glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3 spec = glm::vec3(0.5f, 0.5f, 0.5f), float shiny = 32.0f) : verticesStride(24)
+    Sphere(float radius = 1.0f, int sectorCount = 36, int stackCount = 18, glm::vec3 amb = glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3 diff = glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3 spec = glm::vec3(0.5f, 0.5f, 0.5f), float shiny = 32.0f) : verticesStride(24)
     {
         set(radius, sectorCount, stackCount, amb, diff, spec, shiny);
         buildCoordinatesAndIndices();
@@ -144,6 +144,13 @@ public:
         return (unsigned int)indices.size();
     }
 
+    void setMaterialisticProperties(glm::vec3 amb, glm::vec3 diff, glm::vec3 spec)
+    {
+        this->ambient = amb;
+        this->diffuse = diff;
+        this->specular = spec;
+    }
+
     // draw in VertexArray mode
     void drawSphere(Shader& lightingShader, glm::mat4 model) const      // draw surface
     {
@@ -167,23 +174,58 @@ public:
         glBindVertexArray(0);
     }
 
+    void drawSphereWithManualColor(Shader& lightingShader, glm::mat4 model) const      // draw surface
+    {
+        lightingShader.use();
+
+        lightingShader.setMat4("model", model);
+
+        // draw a sphere with VAO
+        glBindVertexArray(sphereVAO);
+        glDrawElements(GL_TRIANGLES,                    // primitive type
+            this->getIndexCount(),          // # of indices
+            GL_UNSIGNED_INT,                 // data type
+            (void*)0);                       // offset to indices
+
+        // unbind VAO
+        glBindVertexArray(0);
+    }
+
+    void drawSphereWIthTexture(Shader& shaderWithTexture, unsigned int dMap, unsigned int sMap, glm::mat4 model = glm::mat4(1.0f))
+    {
+        shaderWithTexture.use();
+
+        shaderWithTexture.setInt("material.diffuse", 0);
+        shaderWithTexture.setInt("material.specular", 1);
+        shaderWithTexture.setFloat("material.shininess", this->shininess);
+        shaderWithTexture.setMat4("model", model);
+
+        // bind diffuse map
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, dMap);
+        // bind specular map
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, sMap);
+
+
+        // draw a sphere with VAO
+        glBindVertexArray(sphereVAO);
+        glDrawElements(GL_TRIANGLES,                    // primitive type
+            this->getIndexCount(),          // # of indices
+            GL_UNSIGNED_INT,                 // data type
+            (void*)0);                       // offset to indices
+
+        // unbind VAO
+        glBindVertexArray(0);
+    }
+
 private:
     // member functions
-    //void buildCoordinatesAndIndices()
-    //{
-    //    float x, y, z, xz;                              // vertex position
-    //    float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
-
-    //    float sectorStep = 2 * PI / sectorCount;
-    //    float stackStep = PI / stackCount;
-    //    float sectorAngle = -sectorStep;
-    //    float stackAngle = PI / 2 + stackStep;
-
-
     void buildCoordinatesAndIndices()
     {
         float x, y, z, xz;                              // vertex position
         float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
+
         float sectorStep = 2 * PI / sectorCount;
         float stackStep = PI / stackCount;
         float sectorAngle = -sectorStep;
@@ -278,99 +320,6 @@ private:
             vertices.push_back(normals[i + 2]);
         }
     }
-
-    //    for (int i = 0; i <= stackCount; ++i)
-    //    {
-    //        stackAngle -= stackStep;        // starting from pi/2 to -pi/2
-    //        xz = radius * cosf(stackAngle);
-    //        y = radius * sinf(stackAngle);
-    //        // add (sectorCount+1) vertices per stack
-    //        // first and last vertices have same position and normal, but different tex coords
-    //        for (int j = 0; j <= sectorCount; ++j)
-    //        {
-    //            sectorAngle += sectorStep;           // starting from 0 to 2pi
-
-    //            // vertex position (x, y, z)
-    //            z = xz * cosf(sectorAngle);
-    //            x = xz * sinf(sectorAngle);
-    //            coordinates.push_back(x);
-    //            coordinates.push_back(y);
-    //            coordinates.push_back(z);
-
-    //            // normalized vertex normal (nx, ny, nz)
-    //            nx = x * lengthInv;
-    //            ny = y * lengthInv;
-    //            nz = z * lengthInv;
-    //            normals.push_back(nx);
-    //            normals.push_back(ny);
-    //            normals.push_back(nz);
-    //        }
-    //    }
-
-    //    // generate index list of sphere triangles
-    //    // k1--k1+1
-    //    // |  / |
-    //    // | /  |
-    //    // k2--k2+1
-
-    //    int k1, k2;
-    //    for (int i = 0; i < stackCount; ++i)
-    //    {
-    //        k1 = i * (sectorCount + 1);     // beginning of current stack
-    //        k2 = k1 + sectorCount + 1;      // beginning of next stack
-
-    //        for (int j = 0; j < sectorCount; ++j, ++k1, ++k2)
-    //        {
-    //            // 2 triangles per sector excluding first and last stacks
-    //            if (i != 0 && i != (stackCount - 1))
-    //            {
-    //                // k1 => k2 => k1+1
-    //                indices.push_back(k1);
-    //                indices.push_back(k2);
-    //                indices.push_back(k1 + 1);
-
-    //                // k1+1 => k2 => k2+1
-    //                indices.push_back(k1 + 1);
-    //                indices.push_back(k2);
-    //                indices.push_back(k2 + 1);
-    //            }
-    //            // 2 triangles per sector excluding first and last stacks
-    //            else if (i == 0)
-    //            {
-    //                indices.push_back(k1 + 1);
-    //                indices.push_back(k2);
-    //                indices.push_back(k2 + 1);
-
-    //            }
-
-    //            else if (i == (stackCount - 1))
-    //            {
-    //                indices.push_back(k1);
-    //                indices.push_back(k2);
-    //                indices.push_back(k1 + 1);
-    //            }
-    //        }
-    //    }
-    //}
-
-    //void buildVertices()
-    //{
-    //    size_t i, j;
-    //    size_t count = coordinates.size();
-    //    for (i = 0, j = 0; i < count; i += 3, j += 2)
-    //    {
-    //        vertices.push_back(coordinates[i]);
-    //        vertices.push_back(coordinates[i + 1]);
-    //        vertices.push_back(coordinates[i + 2]);
-
-    //        vertices.push_back(normals[i]);
-    //        vertices.push_back(normals[i + 1]);
-    //        vertices.push_back(normals[i + 2]);
-    //    }
-    //}
-
-
-
 
     vector<float> computeFaceNormal(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
     {
