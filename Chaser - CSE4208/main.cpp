@@ -70,9 +70,6 @@ float jump = .01;
 float jump_velocity = 0;
 float rtime = 0;
 bool jumpup = true;
-float protagonistZmove = 0.0f, protagonistXmove = 0.0f, protagonistYmove = 0.0f;
-float protagonistXinitial = 0, protagonistYinitial = 0, protagonistZinitial = 0;
-int protagonistMovementForm = 0, protagonistMovementFormCounter = 0;
 
 // camera
 Camera camera(glm::vec3(0, 1.1f, 17.0f));
@@ -164,22 +161,14 @@ void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
         model = model1 * transforamtion(0, 1, 0, 1, 1, 1);
         model *= goaround;
         pyramid.draw(shader,model);
-        model = model * rotateYMatrix * goaround;
-        pyramid.draw(shader, model);
         model = model1 * transforamtion(0, 1.5, 0, .7, .7, .7);
         model *= goaround;
-        pyramid.draw(shader, model);
-        model = model * rotateYMatrix * goaround;
         pyramid.draw(shader, model);
         model = model1 * transforamtion(0, 2, 0, .4, .4, .4);
         model *= goaround;
         pyramid.draw(shader, model);
-        model = model * rotateYMatrix * goaround;
-        pyramid.draw(shader, model);
         model = model1 * transforamtion(0, 2.3, 0, .2, .2, .2);
         model *= goaround;
-        pyramid.draw(shader, model);
-        model = model * rotateYMatrix * goaround;
         pyramid.draw(shader, model);
         
     }
@@ -336,28 +325,18 @@ void SceneManager2(Shader lightingShaderWithTexture, glm::mat4 alTogether,Cube f
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = model1 * transforamtion(-2, 0, -15, 8, 8, 8);
     pyramid2.draw(lightingShaderWithTexture, model);
-    model *= rotateYMatrix;
-    pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = model1 * transforamtion(-3, 0, -11, 5, 5, 5);
-    pyramid2.draw(lightingShaderWithTexture, model);
-    model *= rotateYMatrix;
     pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = model1 * transforamtion(-4, 0, -18, 6, 6, 6);
     pyramid2.draw(lightingShaderWithTexture, model);
-    model *= rotateYMatrix;
-    pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = model1 * transforamtion(-4, 0, -22, 4, 4, 4);
-    pyramid2.draw(lightingShaderWithTexture, model);
-    model *= rotateYMatrix;
     pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = model1 * transforamtion(-1, 0, -20, 3, 3, 3);
     pyramid2.draw(lightingShaderWithTexture, model);
-    model *= rotateYMatrix;
-    pyramid2.draw(lightingShaderWithTexture, (model));
 
     model = transforamtion(-2, 1, -9, .5, .5, .5);
     model = alTogether * model;
@@ -375,6 +354,9 @@ void SceneManager2(Shader lightingShaderWithTexture, glm::mat4 alTogether,Cube f
     model = alTogether * model;
     tree(pyramid, lightingShaderWithTexture, model);
     model = transforamtion(-.1, 4.5, -15, .5, .5, .5);
+    model = alTogether * model;
+    cylinder.Draw(lightingShaderWithTexture, model);
+    model = transforamtion(-100, 4.5, -15, .5, .5, .5);
     model = alTogether * model;
     cylinder.Draw(lightingShaderWithTexture, model);
 }
@@ -695,6 +677,29 @@ int main()
             spotlight[i+4].setUpspotLight(lightingShaderWithTexture);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
+        for (int i = 0;i < 9;i += 3) {
+            for (int j = 0; j < 3; j++) {
+                pointlight[j + i].position = glm::vec3(-2.4, 1 + j * 1.5, -3.7 + i * 3.5);
+                pointlight[j + i].Number = j + i;
+                pointlight[j + i].p_ambient = p_ambient;
+                pointlight[j + i].p_diffuse = p_diffuse;
+                pointlight[j + i].p_specular = p_specular;
+                pointlight[j + i].setUpPointLight(lightingShaderWithTexture);
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+        }
+        for (int i = 0;i < 9;i += 3) {
+            for (int j = 0; j < 3; j++) {
+                pointlight2[j + i].position = glm::vec3(2.59, 1 + j * 1.5, -3.7 + i * 3.5);
+                pointlight2[j + i].Number = j + i;
+                pointlight2[j + i].p_ambient = p_ambient;
+                pointlight2[j + i].p_diffuse = p_diffuse;
+                pointlight2[j + i].p_specular = p_specular;
+                pointlight2[j + i].setUpPointLight(lightingShaderWithTexture);
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            }
+
+        }
 
 
         lightingShaderWithTexture.use();
@@ -803,11 +808,6 @@ int main()
             //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
        
-        if(nightmode)
-            ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
-        else
-            ourShader.setVec3("color", glm::vec3(1, 0.984, 0));
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         lightingShader.use();
         lightingShader.setVec3("viewPos", camera.Position);
@@ -847,35 +847,6 @@ int main()
     return 0;
 }
 
-void drawCube(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 model = glm::mat4(1.0f), float r = 1.0f, float g = 1.0f, float b = 1.0f)
-{
-    lightingShader.use();
-
-    lightingShader.setVec3("material.ambient", glm::vec3(r, g, b));
-    lightingShader.setVec3("material.diffuse", glm::vec3(r, g, b));
-    lightingShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-    lightingShader.setFloat("material.shininess", 32.0f);
-
-    lightingShader.setMat4("model", model);
-
-    glBindVertexArray(cubeVAO);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-}
-
-void drawPool(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model = glm::mat4(1.0f), float r = 1.0f, float g = 1.0f, float b = 1.0f) {
-    lightingShader.use();
-
-    lightingShader.setVec3("material.ambient", glm::vec3(r, g, b));
-    lightingShader.setVec3("material.diffuse", glm::vec3(r, g, b));
-    lightingShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-    lightingShader.setFloat("material.shininess", 32.0f);
-
-    lightingShader.setMat4("model", model);
-
-    glBindVertexArray(p1VAO);
-    glDrawElements(GL_TRIANGLES, 27, GL_UNSIGNED_INT, 0);
-}
-
 
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -887,34 +858,25 @@ void processInput(GLFWwindow* window)
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.ProcessKeyboard(FORWARD, deltaTime);
-        protagonistZmove -= (camera.MovementSpeed * deltaTime);
-        if (protagonistMovementFormCounter == 0) {
-            protagonistMovementForm = 1;
-        }
+
+        
     }
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         camera.ProcessKeyboard(BACKWARD, deltaTime);
-        protagonistZmove += (camera.MovementSpeed * deltaTime);
-        if (protagonistMovementFormCounter == 0) {
-            protagonistMovementForm = 1;
-        }
+
+        
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         camera.ProcessKeyboard(LEFT, deltaTime);
-        protagonistXmove -= (camera.MovementSpeed * deltaTime);
-        if (protagonistMovementFormCounter == 0) {
-            protagonistMovementForm = 1;
-        }
+
+        
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
-        protagonistXmove += (camera.MovementSpeed * deltaTime);
-        if (protagonistMovementFormCounter == 0) {
-            protagonistMovementForm = 1;
-        }
+
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         camera.ProcessKeyboard(UP, deltaTime);
