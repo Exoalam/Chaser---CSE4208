@@ -18,7 +18,7 @@ struct Vertex {
 class CurvedRoad {
 public:
     // Constructor
-    CurvedRoad(const glm::mat4& model, const std::string& texturePath,
+    CurvedRoad(const std::string& texturePath,
         const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3,
         int numSegments, float roadWidth);
 
@@ -29,11 +29,10 @@ public:
     void init();
 
     // Render the road
-    void draw(Shader& shader);
+    void draw(Shader& shader, glm::mat4& model);
 
 private:
     GLuint VAO, VBO, texture;
-    glm::mat4 modelMatrix;
     std::vector<Vertex> vertices;
     std::string texturePath;
     glm::vec3 p0, p1, p2, p3;

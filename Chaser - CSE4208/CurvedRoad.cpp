@@ -2,10 +2,10 @@
 #include "stb_image.h"
 #include <iostream>
 
-CurvedRoad::CurvedRoad(const glm::mat4& model, const std::string& texturePath,
+CurvedRoad::CurvedRoad(const std::string& texturePath,
     const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3,
     int numSegments, float roadWidth)
-    : modelMatrix(model), texturePath(texturePath),
+    : texturePath(texturePath),
     p0(p0), p1(p1), p2(p2), p3(p3),
     numSegments(numSegments), roadWidth(roadWidth) {
     init();
@@ -49,14 +49,14 @@ void CurvedRoad::init() {
     glBindVertexArray(0);
 }
 
-void CurvedRoad::draw(Shader& shader) {
+void CurvedRoad::draw(Shader& shader, glm::mat4& model) {
     shader.use();
     glBindVertexArray(VAO);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    shader.setMat4("model", modelMatrix);
+    shader.setMat4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 

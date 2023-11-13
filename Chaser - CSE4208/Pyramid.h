@@ -7,15 +7,13 @@
 
 class Pyramid {
 public:
-    Pyramid(const glm::mat4& transform, const std::string& texturePath);
+    Pyramid(const std::string& texturePath);
     ~Pyramid();
 
-    void draw(Shader& shader);
-    void setTransform(glm::mat4 model);
+    void draw(Shader& shader, glm::mat4& transform);
 
 private:
     GLuint VAO, VBO, texture;
-    glm::mat4 modelMatrix;
     std::string texturePath;
 
     // Initialize the pyramid (setup VAO, VBO, texture, etc.)

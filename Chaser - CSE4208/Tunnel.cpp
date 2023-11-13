@@ -7,10 +7,10 @@
 
 
 
-Tunnel::Tunnel(const glm::mat4& model, const std::string& texturePath,
+Tunnel::Tunnel(const std::string& texturePath,
     const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3,
     int numSegments, float tunnelRadius, int circlePoints)
-    : modelMatrix(model), texturePath(texturePath),
+    :texturePath(texturePath),
     p0(p0), p1(p1), p2(p2), p3(p3),
     numSegments(numSegments), tunnelRadius(tunnelRadius), circlePoints(circlePoints) {
     init();
@@ -54,7 +54,7 @@ void Tunnel::init() {
     glBindVertexArray(0);
 }
 
-void Tunnel::draw(Shader& shader) {
+void Tunnel::draw(Shader& shader, glm::mat4& model) {
     shader.use();
     
     glBindVertexArray(VAO);
@@ -62,7 +62,7 @@ void Tunnel::draw(Shader& shader) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    shader.setMat4("model", modelMatrix);
+    shader.setMat4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 

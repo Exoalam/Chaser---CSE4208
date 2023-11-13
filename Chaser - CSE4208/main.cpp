@@ -155,25 +155,25 @@ void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
         goaround = glm::rotate(identityMatrix, glm::radians(float(i)), glm::vec3(0.0f, 1.0f, 0.0f));
         rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         model = model1 * transforamtion(0, 1, 0, 1, 1, 1);
-        pyramid.setTransform(model * goaround);
-        pyramid.draw(shader);
-        pyramid.setTransform(model * rotateYMatrix * goaround);
-        pyramid.draw(shader);
+        model *= goaround;
+        pyramid.draw(shader,model);
+        model = model * rotateYMatrix * goaround;
+        pyramid.draw(shader, model);
         model = model1 * transforamtion(0, 1.5, 0, .7, .7, .7);
-        pyramid.setTransform(model * goaround);
-        pyramid.draw(shader);
-        pyramid.setTransform(model * rotateYMatrix * goaround);
-        pyramid.draw(shader);
+        model *= goaround;
+        pyramid.draw(shader, model);
+        model = model * rotateYMatrix * goaround;
+        pyramid.draw(shader, model);
         model = model1 * transforamtion(0, 2, 0, .4, .4, .4);
-        pyramid.setTransform(model * goaround);
-        pyramid.draw(shader);
-        pyramid.setTransform(model * rotateYMatrix * goaround);
-        pyramid.draw(shader);
+        model *= goaround;
+        pyramid.draw(shader, model);
+        model = model * rotateYMatrix * goaround;
+        pyramid.draw(shader, model);
         model = model1 * transforamtion(0, 2.3, 0, .2, .2, .2);
-        pyramid.setTransform(model * goaround);
-        pyramid.draw(shader);
-        pyramid.setTransform(model * rotateYMatrix * goaround);
-        pyramid.draw(shader);
+        model *= goaround;
+        pyramid.draw(shader, model);
+        model = model * rotateYMatrix * goaround;
+        pyramid.draw(shader, model);
         
     }
 
@@ -286,13 +286,23 @@ void SceneManager2(Shader lightingShaderWithTexture, glm::mat4 alTogether,Cube f
     rotateZMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_Z), glm::vec3(0.0f, 0.0f, 1.0f));
     model = rotateXMatrix * rotateYMatrix * rotateZMatrix;
 
-    model = transforamtion(-10, -0.02, -35, 20, .01, 30) * alTogether;
-    forestg.drawCubeWithTexture(lightingShaderWithTexture, model);
+    model = transforamtion(-10, -0.02, -35, 20, .01, 30);
 
-    cr.draw(lightingShaderWithTexture);
-    cr2.draw(lightingShaderWithTexture);
-    tunnel.draw(lightingShaderWithTexture);
-    tunnel2.draw(lightingShaderWithTexture);
+    model = alTogether * model;
+    forestg.drawCubeWithTexture(lightingShaderWithTexture, model);
+    rotateXMatrix = glm::rotate(identityMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = transforamtion(0, 0, -10, 1, 1, 1) * rotateXMatrix;
+    model = alTogether * model;
+    cr.draw(lightingShaderWithTexture, model);
+    model = transforamtion(7, 0, -25, 1, 1, 1) * rotateXMatrix;
+    model = alTogether * model;
+    cr2.draw(lightingShaderWithTexture,model);
+    model = transforamtion(0, 0, -10, 1, 1, 1) * rotateXMatrix;
+    model = alTogether * model;
+    tunnel.draw(lightingShaderWithTexture,model);
+    model = transforamtion(7, 0, -25, 1, 1, 1) * rotateXMatrix;
+    model = alTogether * model;
+    tunnel2.draw(lightingShaderWithTexture,model);
     //for (int i = 0; i < 25; i+=4) {
     //    model = transforamtion(-8, 0, -30 + i, 1, 1, 1);
     //    tree(pyramid, lightingShaderWithTexture, model);
@@ -300,60 +310,65 @@ void SceneManager2(Shader lightingShaderWithTexture, glm::mat4 alTogether,Cube f
     //    cylinder.Draw(lightingShaderWithTexture, model);
     //}
     for (int i = 0; i < 25; i += 5) {
-        model = transforamtion(-8, 0, -30 + i, 1, 1, 1) * alTogether;
+        model = transforamtion(-8, 0, -30 + i, 1, 1, 1);
+        model = alTogether * model;
         tree(pyramid, lightingShaderWithTexture, model);
-        model = transforamtion(-8, .5, -30 + i, 1, 1, 1) * alTogether;
+        model = transforamtion(-8, .5, -30 + i, 1, 1, 1);
+        model = alTogether * model;
         cylinder.Draw(lightingShaderWithTexture, model);
     }
     for (int i = 0; i < 25; i += 5) {
-        model = transforamtion(-8 + 17, 0, -30 + i, 1, 1, 1) * alTogether;
+        model = transforamtion(-8 + 17, 0, -30 + i, 1, 1, 1);
+        model = alTogether * model;
         tree(pyramid, lightingShaderWithTexture, model);
-        model = transforamtion(-8 + 17, .5, -30 + i, 1, 1, 1) * alTogether;
+        model = transforamtion(-8 + 17, .5, -30 + i, 1, 1, 1);
+        model = alTogether * model;
         cylinder.Draw(lightingShaderWithTexture, model);
     }
-    glm::mat4 model1 = glm::mat4(1.0f);
+    glm::mat4 model1 = alTogether;
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = model1 * transforamtion(-2, 0, -15, 8, 8, 8) * alTogether;
-    pyramid2.setTransform(model);
-    pyramid2.draw(lightingShaderWithTexture);
-    pyramid2.setTransform(model * rotateYMatrix);
-    pyramid2.draw(lightingShaderWithTexture);
+    model = model1 * transforamtion(-2, 0, -15, 8, 8, 8);
+    pyramid2.draw(lightingShaderWithTexture, model);
+    model *= rotateYMatrix;
+    pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = model1 * transforamtion(-3, 0, -11, 5, 5, 5) * alTogether;
-    pyramid2.setTransform(model);
-    pyramid2.draw(lightingShaderWithTexture);
-    pyramid2.setTransform(model * rotateYMatrix);
-    pyramid2.draw(lightingShaderWithTexture);
+    model = model1 * transforamtion(-3, 0, -11, 5, 5, 5);
+    pyramid2.draw(lightingShaderWithTexture, model);
+    model *= rotateYMatrix;
+    pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = model1 * transforamtion(-4, 0, -18, 6, 6, 6) * alTogether;
-    pyramid2.setTransform(model);
-    pyramid2.draw(lightingShaderWithTexture);
-    pyramid2.setTransform(model * rotateYMatrix);
-    pyramid2.draw(lightingShaderWithTexture);
+    model = model1 * transforamtion(-4, 0, -18, 6, 6, 6);
+    pyramid2.draw(lightingShaderWithTexture, model);
+    model *= rotateYMatrix;
+    pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = model1 * transforamtion(-4, 0, -22, 4, 4, 4) * alTogether;
-    pyramid2.setTransform(model);
-    pyramid2.draw(lightingShaderWithTexture);
-    pyramid2.setTransform(model * rotateYMatrix);
-    pyramid2.draw(lightingShaderWithTexture);
+    model = model1 * transforamtion(-4, 0, -22, 4, 4, 4);
+    pyramid2.draw(lightingShaderWithTexture, model);
+    model *= rotateYMatrix;
+    pyramid2.draw(lightingShaderWithTexture, model);
     rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = model1 * transforamtion(-1, 0, -20, 3, 3, 3) * alTogether;
-    pyramid2.setTransform(model);
-    pyramid2.draw(lightingShaderWithTexture);
-    pyramid2.setTransform(model * rotateYMatrix);
-    pyramid2.draw(lightingShaderWithTexture);
+    model = model1 * transforamtion(-1, 0, -20, 3, 3, 3);
+    pyramid2.draw(lightingShaderWithTexture, model);
+    model *= rotateYMatrix;
+    pyramid2.draw(lightingShaderWithTexture, (model));
 
-    model = transforamtion(-2, 1, -9, .5, .5, .5) * alTogether;
+    model = transforamtion(-2, 1, -9, .5, .5, .5);
+    model = alTogether * model;
     tree(pyramid, lightingShaderWithTexture, model);
-    model = transforamtion(-2, 1.3, -9, .5, .5, .5) * alTogether;
+    model = transforamtion(-2, 1.3, -9, .5, .5, .5);
+    model = alTogether * model;
     cylinder.Draw(lightingShaderWithTexture, model);
-    model = transforamtion(-2, 2.5, -12, .5, .5, .5) * alTogether;
+    model = transforamtion(-2, 2.5, -12, .5, .5, .5);
+    model = alTogether * model;
     tree(pyramid, lightingShaderWithTexture, model);
-    model = transforamtion(-2, 2.8, -12, .5, .5, .5) * alTogether;
+    model = transforamtion(-2, 2.8, -12, .5, .5, .5);
+    model = alTogether * model;
     cylinder.Draw(lightingShaderWithTexture, model);
-    model = transforamtion(-.1, 4, -15, .5, .5, .5) * alTogether;
+    model = transforamtion(-.1, 4, -15, .5, .5, .5);
+    model = alTogether * model;
     tree(pyramid, lightingShaderWithTexture, model);
-    model = transforamtion(-.1, 4.5, -15, .5, .5, .5) * alTogether;
+    model = transforamtion(-.1, 4.5, -15, .5, .5, .5);
+    model = alTogether * model;
     cylinder.Draw(lightingShaderWithTexture, model);
 }
 
@@ -579,37 +594,31 @@ int main()
     PointLight pointlight[9];
     PointLight pointlight2[9];
     Sphere sphere = Sphere();
-    rotateXMatrix = glm::rotate(identityMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 model = transforamtion(0, 0, -10, 1, 1, 1) * rotateXMatrix;
     glm::vec3 p0(0, 5, 0);
     glm::vec3 p1(0, 2, 0);
     glm::vec3 p2(7, 0, 0);
     glm::vec3 p3(7, -10, 0);
     int numSegments = 1000;
     float roadWidth = 1.0f;
-    CurvedRoad cr(model, sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
-
-    model = transforamtion(0, 0, -10, 1, 1, 1);
-    Tunnel tunnel(model * rotateXMatrix, "Textures/tunnel.jpg", p0, p1, p2, p3,
+    CurvedRoad cr(sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
+    Tunnel tunnel("Textures/tunnel.jpg", p0, p1, p2, p3,
         1000, 1.2f, 16);
 
     p0 = glm::vec3(0, 5, 0);
     p1 = glm::vec3(0, 2, 0);
     p2 = glm::vec3(-7, 0, 0);
     p3 = glm::vec3(-7, -10, 0);
-    model = transforamtion(7, 0, -25, 1, 1, 1) * rotateXMatrix;
-    CurvedRoad cr2(model, sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
-    model = transforamtion(7, 0, -25, 1, 1, 1);
-    Tunnel tunnel2(model* rotateXMatrix, "Textures/tunnel.jpg", p0, p1, p2, p3,
+    CurvedRoad cr2(sroadpath, p0, p1, p2, p3, numSegments, roadWidth);
+    Tunnel tunnel2("Textures/tunnel.jpg", p0, p1, p2, p3,
         1000, 1.2f, 16);
 
     // In your render loop
     
-    glm::mat4 pyramidTransform = transforamtion(0, 5, 0, 5, 5, 5);
+
     std::string texturePath = treepath;
 
-    Pyramid pyramid(pyramidTransform, texturePath);
-    Pyramid pyramid2(pyramidTransform, "Textures/hill.jpg");
+    Pyramid pyramid(texturePath);
+    Pyramid pyramid2("Textures/hill.jpg");
 
     std::vector<std::string> dawnFaces = { "Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png" };
     std::vector<std::string> duskFaces = { "Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png","Textures/grass.png" };
@@ -620,8 +629,9 @@ int main()
     float run_time = 0;
     glm::vec3 current_position1 = camera.Position;
     glm::vec3 current_position2 = camera.Position;
+    glm::vec3 current_position3 = camera.Position;
     glm::mat4 current_mat1 = glm::mat4(1.0f);
-    glm::mat4 current_mat2 = transforamtion(0, 0, -20, 1, 1, 1);
+    glm::mat4 current_mat3 = transforamtion(0, 0, 0, 1, 1, 1);
     while (!glfwWindowShouldClose(window))
     {
         
@@ -651,19 +661,7 @@ int main()
         // Set the clear color using the current interpolated color
         glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 30.0f);
-        //glm::mat4 projection = glm::ortho(-2.0f, +2.0f, -1.5f, +1.5f, 0.1f, 100.0f);
-
-        // camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
-        //glm::mat4 view = basic_camera.createViewMatrix();
-        //glDepthFunc(GL_LEQUAL);
-        //skyboxShader.setVec3("viewPos", camera.Position);
-        //skyboxShader.setMat4("view", view);
-        //skyboxShader.setMat4("projection", projection);
-        //float timeOfDay = .5f;
-        //skybox.Draw(skyboxShader, timeOfDay);
-        //glDepthFunc(GL_LESS);
-
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -674,14 +672,15 @@ int main()
         // point light 1
         //pointlight1.setUpPointLight(lightingShader);
         for (int i = 0; i < 4; i++) {
-            spotlight[i].position = glm::vec3(.5, 1.95, 4.5 - i * 3);
+            
+            spotlight[i].position = glm::vec3(.5, 1.95, 4.5 - i * 3+ current_mat1[3][2]);
             spotlight[i].Number = i;
             spotlight[i].s_ambient = s_ambient;
             spotlight[i].s_diffuse = s_diffuse;
             spotlight[i].s_specular = s_specular;
             spotlight[i].setUpspotLight(lightingShaderWithTexture);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            spotlight[i+4].position = glm::vec3(-.5, 1.95, 4.5 - i * 3);
+            spotlight[i+4].position = glm::vec3(-.5, 1.95, 4.5 - i * 3+ current_mat1[3][2]);
             spotlight[i+4].Number = i+4;
             spotlight[i+4].s_ambient = s_ambient;
             spotlight[i+4].s_diffuse = s_diffuse;
@@ -689,49 +688,12 @@ int main()
             spotlight[i+4].setUpspotLight(lightingShaderWithTexture);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
-        for (int i = 0;i < 9;i+=3) {
-            for (int j = 0; j < 3; j++) {
-                pointlight[j+i].position = glm::vec3(-2.4, 1 + j * 1.5, -3.7 + i * 3.5);
-                pointlight[j+i].Number = j+i;
-                pointlight[j + i].p_ambient = p_ambient;
-                pointlight[j + i].p_diffuse = p_diffuse;
-                pointlight[j + i].p_specular = p_specular;
-                pointlight[j+i].setUpPointLight(lightingShaderWithTexture);
-                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            }
-        }
-        for (int i = 0;i < 9;i += 3) {
-            for (int j = 0; j < 3; j++) {
-                pointlight2[j + i].position = glm::vec3(2.59, 1 + j * 1.5, -3.7 + i * 3.5);
-                pointlight2[j + i].Number = j + i;
-                pointlight2[j + i].p_ambient = p_ambient;
-                pointlight2[j + i].p_diffuse = p_diffuse;
-                pointlight2[j + i].p_specular = p_specular;
-                pointlight2[j + i].setUpPointLight(lightingShaderWithTexture);
-                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            }
 
-        }
-
-        // point light 2
-        //pointlight2.setUpPointLight(lightingShader);
-        //// point light 3
-        //pointlight3.setUpPointLight(lightingShader);
-        //// point light 4
-        //pointlight4.setUpPointLight(lightingShader);
-
-        // activate shader
 
         lightingShaderWithTexture.use();
         
-        // pass projection matrix to shader (note that in this case it could change every frame)
-        //glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        //glm::mat4 projection = glm::ortho(-2.0f, +2.0f, -1.5f, +1.5f, 0.1f, 100.0f);
         lightingShaderWithTexture.setMat4("projection", projection);
 
-        // camera/view transformation
-        //glm::mat4 view = camera.GetViewMatrix();
-        //glm::mat4 view = basic_camera.createViewMatrix();
         lightingShaderWithTexture.setMat4("view", view);
 
         glm::vec3 d_a = glm::vec3(0.2f, 0.2f, 0.2f) * d_ambient;
@@ -778,7 +740,6 @@ int main()
             rtime = 0;
             jumpup = true;
         }
-        //model = transforamtion(movelr, jump, movefr, .5, .5, .5);
         float playerx = camera.Position.x-.22f;
         float playerz = camera.Position.z;
         //if (playerx < -1)
@@ -791,21 +752,17 @@ int main()
         //model = transforamtion(0, jump, 10, .5, .5, .5);
         //model *=  cubefollower.update(deltaTime/20);
         cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
-        cout << "distance1: " << current_position1.z- camera.Position.z << endl;
-        cout << "distance2: " << current_position2.z- camera.Position.z << endl;
+        //cout << "distance1: " << current_mat1[3][0]<<" " << current_mat1[3][1]<<" "<< current_mat1[3][2] << endl;
         if (current_position1.z - camera.Position.z > 22) {
-            current_mat1 *= transforamtion(0, 0, -40, 1, 1, 1);
-            current_position1 = camera.Position-glm::vec3(0,0,20);
+            current_mat1 *= transforamtion(0, 0, -50, 1, 1, 1);
+            current_position1 = camera.Position-glm::vec3(0,0,40);
         }
-        if (current_position2.z - camera.Position.z > 42) {
-            current_mat2 *= transforamtion(0, 0, -40, 1, 1, 1);
-            current_position2 = camera.Position;
+        if (current_position3.z - camera.Position.z > 52) {
+            current_mat3 *= transforamtion(0, 0, -50, 1, 1, 1);
+            current_position3 = camera.Position;
         }
-            
-        
         scene_manager(cube_array, current_mat1, lightingShaderWithTexture);
-        scene_manager(cube_array, current_mat2, lightingShaderWithTexture);
-        //SceneManager2(lightingShaderWithTexture, alTogether, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
+        SceneManager2(lightingShaderWithTexture, current_mat3, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
         ourShader.use();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
@@ -815,6 +772,7 @@ int main()
         for (unsigned int i = 0; i < 4; i++)
         {
             model = transforamtion(.5, 1.95, 4.5 - i * 3, .05, .05, .05);
+            model = current_mat1 * model;
             ourShader.setMat4("model", model);
             if (spotlightToggle){
                 ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
@@ -825,6 +783,7 @@ int main()
             
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             model = transforamtion(-.5, 1.95, 4.5 - i * 3, .05, .05, .05);
+            model = current_mat1 * model;
             ourShader.setMat4("model", model);
             if (spotlightToggle) {
                 ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
@@ -835,7 +794,6 @@ int main()
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
        
         if(nightmode)
             ourShader.setVec3("color", glm::vec3(0.8f, 0.8f, 0.8f));
@@ -852,8 +810,9 @@ int main()
         lightingShader.setVec3("direcLight.diffuse", d_d);
         lightingShader.setVec3("direcLight.specular", d_s);
         lightingShader.setBool("dlighton", directionallightToggle);
+        
         model = transforamtion(-5, 30, -30, 5, 5, 5);
-
+        model = current_mat1 * model;
         sphere.drawSphere(lightingShader, model);
 
         

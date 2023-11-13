@@ -2,8 +2,8 @@
 #include "stb_image.h"
 #include <iostream>
 
-Pyramid::Pyramid(const glm::mat4& transform, const std::string& texturePath)
-    : modelMatrix(transform), texturePath(texturePath) {
+Pyramid::Pyramid(const std::string& texturePath)
+    :texturePath(texturePath) {
     init();
 }
 
@@ -68,7 +68,7 @@ GLfloat vertices[] = {
     texture = loadTexture(texturePath);
 }
 
-void Pyramid::draw(Shader& shader) {
+void Pyramid::draw(Shader& shader, glm::mat4& transform) {
     shader.use();
     glBindVertexArray(VAO);
 
@@ -76,7 +76,7 @@ void Pyramid::draw(Shader& shader) {
     glBindTexture(GL_TEXTURE_2D, texture);
     shader.setInt("texture1", 0);
 
-    shader.setMat4("model", modelMatrix);
+    shader.setMat4("model", transform);
 
     // Draw the pyramid
     glDrawArrays(GL_TRIANGLES, 0, 18); // 6 triangles (4 sides + base) * 3 vertices each
@@ -84,9 +84,6 @@ void Pyramid::draw(Shader& shader) {
     glBindVertexArray(0);
 }
 
-void Pyramid::setTransform(glm::mat4 model) {
-    modelMatrix = model;
-}
 
 GLuint Pyramid::loadTexture(const std::string& filename) {
     GLuint textureID;
