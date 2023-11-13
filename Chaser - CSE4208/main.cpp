@@ -70,9 +70,10 @@ float jump = .01;
 float jump_velocity = 0;
 float rtime = 0;
 bool jumpup = true;
+bool walk = false;
 
 // camera
-Camera camera(glm::vec3(0, 1.1f, 17.0f));
+Camera camera(glm::vec3(0, .5f, 17.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -148,7 +149,53 @@ glm::mat4 transforamtion(float tx, float ty, float tz,float sx, float sy, float 
     return model;
 }
 
-void character(Sphere &sphere, Cylinder &cylinder, Shader shader, glm::mat4 model) {
+
+
+glm::mat4 render_player(float minAngle,float maxAngle,glm::vec3 pivot) {
+    // Calculate the elapsed time
+     // Maximum angle in degrees
+    if (walk) {
+        float speed = 2.0f; // Speed of oscillation
+        float time = glfwGetTime();
+
+        // Calculate current angle using sine function for smooth oscillation
+        float angle = minAngle + (sin(time * speed) + 1.0f) / 2.0f * (maxAngle - minAngle);
+
+        // Create transformation matrix
+        glm::mat4 transform = glm::mat4(1.0f); // Identity matrix
+        transform = glm::translate(transform, pivot); // Translate to the pivot point
+        transform = glm::rotate(transform, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate around y-axis
+        transform = glm::translate(transform, pivot); // Translate back
+        return transform;
+    }
+    else {
+        return glm::mat4(1.0f);
+    }
+}
+
+
+void protagonist(Sphere &sphere, Cylinder &cylinder, Shader shader, glm::mat4 model) {
+
+    glm::mat4 transform = transforamtion(0, .2, 0, 1, 1, 1);
+    sphere.drawSphereWithTexture(shader, model * transform);
+    transform = transforamtion(0, .1, 0, 1, 1, 1);
+    cylinder.Draw(shader, model * transform);
+    transform = transforamtion(0.05, .15, 0, .3, .3, .3);
+    sphere.drawSphereWithTexture(shader, model * transform);
+    transform = transforamtion(-0.05, .15, 0, .3, .3, .3);
+    sphere.drawSphereWithTexture(shader, model * transform);
+    transform = transforamtion(0.05, .1, 0, .3, .4, .3);
+    cylinder.Draw(shader, model * transform * render_player(150, 230, glm::vec3(0.01, .15, 0)));
+    transform = transforamtion(-0.05, .1, 0, .3, .4, .3);
+    cylinder.Draw(shader, model * transform * render_player(230, 150, glm::vec3(-0.01, .15, 0)));
+    transform = transforamtion(0.04, 0, 0, .3, .3, .3);
+    sphere.drawSphereWithTexture(shader, model * transform);
+    transform = transforamtion(-0.04, 0, 0, .3, .3, .3);
+    sphere.drawSphereWithTexture(shader, model * transform);
+    transform = transforamtion(0.05, -0.055, 0, .3, .4, .3);
+    cylinder.Draw(shader, model * transform * render_player(230, 150, glm::vec3(-0.01, .1, 0)));
+    transform = transforamtion(-0.05, -0.055, 0, .3, .4, .3);
+    cylinder.Draw(shader, model * transform * render_player(150, 230, glm::vec3(0.01, .1, 0)));
 }
 
 void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
@@ -417,7 +464,7 @@ int main()
     // When drawing the skybox
 
 
-
+    
     string droadpath = "Textures/road.png";
     string sroadpath = "Textures/road.png";
     unsigned int droad = loadTexture(droadpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
@@ -473,7 +520,8 @@ int main()
     Cube forestg = Cube(fgp, fgp, 32.0f, 0.0f, 0.0f, 10.0f, 10.0f);
 
     string treepath = "Textures/tree.jpg";
-
+    string humanpath = "Textures/human.jpg";
+    unsigned int hump = loadTexture(humanpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube cube_array[] = {grass, road, footpath, footpath2, player, b1, pool, win};
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -621,6 +669,21 @@ int main()
     glm::vec3 current_position3 = camera.Position;
     glm::mat4 current_mat1 = glm::mat4(1.0f);
     glm::mat4 current_mat3 = transforamtion(0, 0, 0, 1, 1, 1);
+    Cylinder playerc(.04, .04, .2, 16, 20, "Textures/robot.jpg");
+    float radius = .06f;
+    int sectorCount = 36;
+    int stackCount = 18;
+    glm::vec3 ambient = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 specular = glm::vec3(0.5f, 0.5f, 0.5f);
+    float shininess = 32.0f;
+    int diffuseMap = 0;
+    int specularMap = 0;
+    float TXmin = 0.0f;
+    float TXmax = 1.0f;
+    float TYmin = 0.0f;
+    float TYmax = 1.0f;
+    Sphere player_head = Sphere(radius, sectorCount, stackCount, ambient, diffuse, specular,shininess, hump, hump, 0.0f, 0.0f, 1.0f, 1.0f);
     while (!glfwWindowShouldClose(window))
     {
         
@@ -646,7 +709,7 @@ int main()
 
         // Interpolate between dawn and dusk colors
         glm::vec4 currentColor = dawnColor * (1.0f - time) + duskColor * time;
-
+        
         // Set the clear color using the current interpolated color
         glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 30.0f);
@@ -752,18 +815,20 @@ int main()
             rtime = 0;
             jumpup = true;
         }
-        float playerx = camera.Position.x-.22f;
+        float playerx = camera.Position.x;
         float playerz = camera.Position.z;
         //if (playerx < -1)
         //    playerx = -1;
         //if (playerx > .5f)
         //    playerx = .5;
-        model = transforamtion(playerx, jump, camera.Position.z - 3, .5, .5, .5);
+        model = transforamtion(playerx, jump, camera.Position.z-2, 2, 2, 2);
         //cout << playerx << " " << playerz << endl;
         //model = transforamtion(0, jump, 10, .5, .5, .5);
         //model *=  cubefollower.update(deltaTime/20);
         //cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
-        player.drawCubeWithTexture(lightingShaderWithTexture, model);
+        //player.drawCubeWithTexture(lightingShaderWithTexture, model);
+        model = transforamtion(0, .2, 0, 1, 1, 1) * model;
+        protagonist(player_head, playerc, lightingShaderWithTexture, model);
 
         //cout << "distance1: " << current_mat1[3][0]<<" " << current_mat1[3][1]<<" "<< current_mat1[3][2] << endl;
         if (current_position1.z - camera.Position.z > 22) {
@@ -857,26 +922,28 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-
-        
+        camera.ProcessKeyboard(FORWARD, deltaTime); 
+        walk = true;
+    }
+    else {
+        walk = false;
     }
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         camera.ProcessKeyboard(BACKWARD, deltaTime);
-
+        walk = true;
         
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         camera.ProcessKeyboard(LEFT, deltaTime);
-
+        walk = true;
         
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
-
+        walk = true;
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         camera.ProcessKeyboard(UP, deltaTime);

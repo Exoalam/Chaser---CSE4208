@@ -28,85 +28,75 @@ public:
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
+    // glm::vec3 emissive;
+     // Texture properties
+    float TXmin = 0.0f;
+    float TXmax = 1.0f;
+    float TYmin = 0.0f;
+    float TYmax = 1.0f;
+    unsigned int diffuseMap;
+    unsigned int specularMap;
     float shininess;
-    // ctor/dtor
-    Sphere(float radius = 1.0f, int sectorCount = 36, int stackCount = 18, glm::vec3 amb = glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3 diff = glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3 spec = glm::vec3(0.5f, 0.5f, 0.5f), float shiny = 32.0f) : verticesStride(24)
-    {
-        set(radius, sectorCount, stackCount, amb, diff, spec, shiny);
-        buildCoordinatesAndIndices();
-        buildVertices();
 
-        glGenVertexArrays(1, &sphereVAO);
-        glBindVertexArray(sphereVAO);
-
-        // create VBO to copy vertex data to VBO
-        unsigned int sphereVBO;
-        glGenBuffers(1, &sphereVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);           // for vertex data
-        glBufferData(GL_ARRAY_BUFFER,                   // target
-            this->getVertexSize(), // data size, # of bytes
-            this->getVertices(),   // ptr to vertex data
-            GL_STATIC_DRAW);                   // usage
-
-        // create EBO to copy index data
-        unsigned int sphereEBO;
-        glGenBuffers(1, &sphereEBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);   // for index data
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,           // target
-            this->getIndexSize(),             // data size, # of bytes
-            this->getIndices(),               // ptr to index data
-            GL_STATIC_DRAW);                   // usage
-
-        // activate attrib arrays
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-        // set attrib arrays with stride and offset
-        int stride = this->getVerticesStride();     // should be 24 bytes
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, (void*)(sizeof(float) * 3));
-
-        // unbind VAO and VBOs
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    Sphere(float radius, int sectorCount, int stackCount, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shiny,
+        unsigned int dMap, unsigned int sMap, float textureXmin, float textureYmin, float textureXmax, float textureYmax) : verticesStride(24) {
+        set(radius, sectorCount, stackCount, amb, diff, spec, shiny, dMap, sMap, textureXmin, textureYmin, textureXmax, textureYmax);
+        setUpSphereVertexDataAndConfigureVertexAttribute();
     }
     ~Sphere() {}
-
     // getters/setters
-
-    void set(float radius, int sectors, int stacks, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shiny)
-    {
-        if (radius > 0)
-            this->radius = radius;
-        this->sectorCount = sectors;
-        if (sectors < MIN_SECTOR_COUNT)
-            this->sectorCount = MIN_SECTOR_COUNT;
-        this->stackCount = stacks;
-        if (stacks < MIN_STACK_COUNT)
-            this->stackCount = MIN_STACK_COUNT;
+ /*   void toggleEmissive() {
+        this->emissive = glm::vec3(1.0f, 0.0f, 0.0f);
+    }*/
+    void setDefaults() {
+        this->radius = 1.0f;
+        this->sectorCount = 36;
+        this->stackCount = 18;
+        this->ambient = glm::vec3(1.0f, 0.0f, 0.0f);
+        this->diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
+        this->specular = glm::vec3(0.5f, 0.5f, 0.5f);
+        this->shininess = 32.0f;
+        this->diffuseMap = 0;
+        this->specularMap = 0;
+        this->TXmin = 0.0f;
+        this->TXmax = 1.0f;
+        this->TYmin = 0.0f;
+        this->TYmax = 1.0f;
+    }
+    void set(float radius, int sectorCount, int stackCount, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shiny,
+        unsigned int dMap, unsigned int sMap, float textureXmin, float textureYmin, float textureXmax, float textureYmax) {
+        this->radius = radius;
+        this->sectorCount = sectorCount;
+        this->stackCount = stackCount;
         this->ambient = amb;
         this->diffuse = diff;
         this->specular = spec;
         this->shininess = shiny;
+        //this->emissive = emis;
+        this->diffuseMap = dMap;
+        this->specularMap = sMap;
+        this->TXmin = textureXmin;
+        this->TXmax = textureXmax;
+        this->TYmin = textureYmin;
+        this->TYmax = textureYmax;
     }
 
     void setRadius(float radius)
     {
         if (radius != this->radius)
-            set(radius, sectorCount, stackCount, ambient, diffuse, specular, shininess);
+            set(radius, sectorCount, stackCount, ambient, diffuse, specular, shininess, diffuseMap, specularMap, TYmax, TYmin, TXmax, TYmax);
     }
 
     void setSectorCount(int sectors)
     {
         if (sectors != this->sectorCount)
-            set(radius, sectors, stackCount, ambient, diffuse, specular, shininess);
+            set(radius, sectorCount, stackCount, ambient, diffuse, specular, shininess, diffuseMap, specularMap, TYmax, TYmin, TXmax, TYmax);
     }
 
     void setStackCount(int stacks)
     {
         if (stacks != this->stackCount)
-            set(radius, sectorCount, stacks, ambient, diffuse, specular, shininess);
+            set(radius, sectorCount, stackCount, ambient, diffuse, specular, shininess, diffuseMap, specularMap, TYmax, TYmin, TXmax, TYmax);
     }
 
     // for interleaved vertices
@@ -143,14 +133,25 @@ public:
     {
         return (unsigned int)indices.size();
     }
+    void drawSphereWithTexture(Shader& lightingShaderWithTexture, glm::mat4 model = glm::mat4(1.0f)) {
+        lightingShaderWithTexture.use();
 
-    void setMaterialisticProperties(glm::vec3 amb, glm::vec3 diff, glm::vec3 spec)
-    {
-        this->ambient = amb;
-        this->diffuse = diff;
-        this->specular = spec;
+        lightingShaderWithTexture.setVec3("material.ambient", this->ambient);
+        lightingShaderWithTexture.setVec3("material.diffuse", this->diffuse);
+        lightingShaderWithTexture.setVec3("material.specular", this->specular);
+        lightingShaderWithTexture.setFloat("material.shininess", this->shininess);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->diffuseMap);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, this->specularMap);
+
+        lightingShaderWithTexture.setMat4("model", model);
+
+        glBindVertexArray(sphereTexVAO);
+        glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, 0);
     }
-
     // draw in VertexArray mode
     void drawSphere(Shader& lightingShader, glm::mat4 model) const      // draw surface
     {
@@ -158,6 +159,7 @@ public:
 
         lightingShader.setVec3("material.ambient", this->ambient);
         lightingShader.setVec3("material.diffuse", this->diffuse);
+        //lightingShader.setVec3("material.emissive", this->emissive);
         lightingShader.setVec3("material.specular", this->specular);
         lightingShader.setFloat("material.shininess", this->shininess);
 
@@ -174,52 +176,13 @@ public:
         glBindVertexArray(0);
     }
 
-    void drawSphereWithManualColor(Shader& lightingShader, glm::mat4 model) const      // draw surface
-    {
-        lightingShader.use();
-
-        lightingShader.setMat4("model", model);
-
-        // draw a sphere with VAO
-        glBindVertexArray(sphereVAO);
-        glDrawElements(GL_TRIANGLES,                    // primitive type
-            this->getIndexCount(),          // # of indices
-            GL_UNSIGNED_INT,                 // data type
-            (void*)0);                       // offset to indices
-
-        // unbind VAO
-        glBindVertexArray(0);
-    }
-
-    void drawSphereWIthTexture(Shader& shaderWithTexture, unsigned int dMap, unsigned int sMap, glm::mat4 model = glm::mat4(1.0f))
-    {
-        shaderWithTexture.use();
-
-        shaderWithTexture.setInt("material.diffuse", 0);
-        shaderWithTexture.setInt("material.specular", 1);
-        shaderWithTexture.setFloat("material.shininess", this->shininess);
-        shaderWithTexture.setMat4("model", model);
-
-        // bind diffuse map
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, dMap);
-        // bind specular map
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, sMap);
-
-
-        // draw a sphere with VAO
-        glBindVertexArray(sphereVAO);
-        glDrawElements(GL_TRIANGLES,                    // primitive type
-            this->getIndexCount(),          // # of indices
-            GL_UNSIGNED_INT,                 // data type
-            (void*)0);                       // offset to indices
-
-        // unbind VAO
-        glBindVertexArray(0);
-    }
-
 private:
+    unsigned int sphereTexVAO;
+    unsigned int sphereVBO;
+    unsigned int sphereEBO;
+    vector<float> textureCoordinates, texCoords;
+
+    unsigned int textureID;
     // member functions
     void buildCoordinatesAndIndices()
     {
@@ -304,7 +267,142 @@ private:
             }
         }
     }
+    void buildTextureCoordinates()
+    {
+        float sectorStep = 2 * PI / sectorCount;
+        float stackStep = PI / stackCount;
 
+        for (int i = 0; i <= stackCount; ++i)
+        {
+            float stackAngle = PI / 2 - i * stackStep;
+
+            for (int j = 0; j <= sectorCount; ++j)
+            {
+                float sectorAngle = j * sectorStep;
+
+                float x = cosf(sectorAngle) * sinf(stackAngle);
+                float y = cosf(stackAngle);
+                float z = sinf(sectorAngle) * sinf(stackAngle);
+
+                textureCoordinates.push_back(x);
+                textureCoordinates.push_back(y);
+            }
+        }
+    }
+
+    void setUpSphereVertexDataAndConfigureVertexAttribute() {
+        //generateSphereData();
+        generatepoints();
+        buildVertices();
+        glGenVertexArrays(1, &sphereTexVAO);
+        glGenBuffers(1, &sphereVBO);
+        glGenBuffers(1, &sphereEBO);
+
+        glBindVertexArray(sphereTexVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+        int stride = this->getVerticesStride();
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+    }
+    void generatepoints()
+    {
+        //std::vector<float>().swap(coordinates);
+        //std::vector<float>().swap(normals);
+        //std::vector<float>().swap(texCoords);
+        float x, y, z, xy;                              // vertex position
+        float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
+        float s, t;                                     // vertex texCoord
+
+        float sectorStep = 2 * PI / sectorCount;
+        float stackStep = PI / stackCount;
+        float sectorAngle, stackAngle;
+
+        for (int i = 0; i <= stackCount; ++i)
+        {
+            stackAngle = PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+            xy = radius * cosf(stackAngle);             // r * cos(u)
+            z = radius * sinf(stackAngle);              // r * sin(u)
+
+            // add (sectorCount+1) vertices per stack
+            // first and last vertices have same position and normal, but different tex coords
+            for (int j = 0; j <= sectorCount; ++j)
+            {
+                sectorAngle = j * sectorStep;           // starting from 0 to 2pi
+
+                // vertex position (x, y, z)
+                x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
+                y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
+                coordinates.push_back(x);
+                coordinates.push_back(y);
+                coordinates.push_back(z);
+
+                // normalized vertex normal (nx, ny, nz)
+                nx = x * lengthInv;
+                ny = y * lengthInv;
+                nz = z * lengthInv;
+                normals.push_back(nx);
+                normals.push_back(ny);
+                normals.push_back(nz);
+
+                // vertex tex coord (s, t) range between [0, 1]
+                s = (float)j / sectorCount;
+                t = (float)i / stackCount;
+                texCoords.push_back(s);
+                texCoords.push_back(t);
+            }
+        }
+
+        int k1, k2;
+        for (int i = 0; i < stackCount; ++i)
+        {
+            k1 = i * (sectorCount + 1);     // beginning of current stack
+            k2 = k1 + sectorCount + 1;      // beginning of next stack
+
+            for (int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+            {
+                // 2 triangles per sector excluding first and last stacks
+                if (i != 0 && i != (stackCount - 1))
+                {
+                    // k1 => k2 => k1+1
+                    indices.push_back(k1);
+                    indices.push_back(k2);
+                    indices.push_back(k1 + 1);
+
+                    // k1+1 => k2 => k2+1
+                    indices.push_back(k1 + 1);
+                    indices.push_back(k2);
+                    indices.push_back(k2 + 1);
+                }
+                // 2 triangles per sector excluding first and last stacks
+                else if (i == 0)
+                {
+                    indices.push_back(k1 + 1);
+                    indices.push_back(k2);
+                    indices.push_back(k2 + 1);
+
+                }
+
+                else if (i == (stackCount - 1))
+                {
+                    indices.push_back(k1);
+                    indices.push_back(k2);
+                    indices.push_back(k1 + 1);
+                }
+            }
+        }
+    }
     void buildVertices()
     {
         size_t i, j;
@@ -315,10 +413,26 @@ private:
             vertices.push_back(coordinates[i + 1]);
             vertices.push_back(coordinates[i + 2]);
 
-            vertices.push_back(normals[i]);
-            vertices.push_back(normals[i + 1]);
-            vertices.push_back(normals[i + 2]);
+            if (i < normals.size())
+                vertices.push_back(normals[i]);
+            if (i + 1 < normals.size())
+                vertices.push_back(normals[i + 1]);
+            if (i + 2 < normals.size())
+                vertices.push_back(normals[i + 2]);
+
+            // Add texture coordinates
+            if (j < textureCoordinates.size())
+                vertices.push_back(textureCoordinates[j]);
+            if (j + 1 < textureCoordinates.size())
+                vertices.push_back(textureCoordinates[j + 1]);
         }
+    }
+
+    void addIndices(unsigned int i1, unsigned int i2, unsigned int i3)
+    {
+        indices.push_back(i1);
+        indices.push_back(i2);
+        indices.push_back(i3);
     }
 
     vector<float> computeFaceNormal(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
