@@ -74,6 +74,7 @@ float fuel_index = 4;
 float bonus_rotate = 0;
 vector<glm::vec3> fuel_tank = { glm::vec3(0.5, 1, 10), glm::vec3(0, 1, 0) };
 bool start_scene = true;
+bool game_over = false;
 
 // camera
 Camera camera(glm::vec3(0, .5f, 17.0f));
@@ -534,6 +535,13 @@ int main()
     string s2path = "Textures/s2.jpg";
     unsigned int s2p = loadTexture(s2path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube s2 = Cube(s2p, s2p, 32.0f, 0.0f, 0.0f, 1, 1);
+    string s3path = "Textures/s3.png";
+    unsigned int s3p = loadTexture(s3path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s3 = Cube(s3p, s3p, 32.0f, 0.0f, 0.0f, 1, 1);
+    string s4path = "Textures/s4.jpg";
+    unsigned int s4p = loadTexture(s4path.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s4 = Cube(s4p, s4p, 32.0f, 0.0f, 0.0f, 1, 1);
+
     string treepath = "Textures/tree.jpg";
     string humanpath = "Textures/human.jpg";
     unsigned int hump = loadTexture(humanpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
@@ -944,6 +952,16 @@ int main()
 
             model = transforamtion(-5, 30, -30, 5, 5, 5);
             model = current_mat1 * model;
+            if (fuel[0] == 0) {
+                game_over = true;
+                start_scene = true;
+            }
+       }
+       else if (game_over) {
+           glm::mat4 model = transforamtion(camera.Position.x - 2.5, camera.Position.y, camera.Position.z - 7, 5, 1, .1);
+           s3.drawCubeWithTexture(lightingShaderWithTexture, model);
+           model = transforamtion(camera.Position.x - 1, camera.Position.y - 1, camera.Position.z - 7, 2, .5, .1);
+           s4.drawCubeWithTexture(lightingShaderWithTexture, model);
        }
        else {
            glm::mat4 model = transforamtion(camera.Position.x-2.5, camera.Position.y, camera.Position.z - 7, 5,1,.1);
@@ -951,6 +969,8 @@ int main()
            model = transforamtion(camera.Position.x-1, camera.Position.y-1, camera.Position.z - 7, 2, .5, .1);
            s2.drawCubeWithTexture(lightingShaderWithTexture, model);
        }
+
+
 
         
         //sphere.drawSphere(lightingShader, model);
@@ -1016,7 +1036,11 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(UP, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        camera.ProcessKeyboard(DOWN, deltaTime);
+        //camera.ProcessKeyboard(DOWN, deltaTime);
+        start_scene = false;
+        game_over = false;
+        fuel = { 1,1,1,1,1 };
+        fuel_index = 4;
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
         camera.ProcessKeyboard(P_UP, deltaTime);
