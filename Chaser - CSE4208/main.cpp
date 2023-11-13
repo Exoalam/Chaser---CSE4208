@@ -278,6 +278,84 @@ void scene_manager(Cube cube[], glm::mat4 alTogether, Shader lightingShaderWithT
     }
 
 }
+void SceneManager2(Shader lightingShaderWithTexture, glm::mat4 alTogether,Cube forestg, CurvedRoad &cr, CurvedRoad &cr2, Tunnel &tunnel, Tunnel &tunnel2, Pyramid &pyramid, Pyramid &pyramid2, Cylinder &cylinder) {
+    glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+    glm::mat4 rotateXMatrix, rotateYMatrix, rotateZMatrix, model;
+    rotateXMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_X), glm::vec3(1.0f, 0.0f, 0.0f));
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_Y), glm::vec3(0.0f, 1.0f, 0.0f));
+    rotateZMatrix = glm::rotate(identityMatrix, glm::radians(rotateAngle_Z), glm::vec3(0.0f, 0.0f, 1.0f));
+    model = rotateXMatrix * rotateYMatrix * rotateZMatrix;
+
+    model = transforamtion(-10, -0.02, -35, 20, .01, 30) * alTogether;
+    forestg.drawCubeWithTexture(lightingShaderWithTexture, model);
+
+    cr.draw(lightingShaderWithTexture);
+    cr2.draw(lightingShaderWithTexture);
+    tunnel.draw(lightingShaderWithTexture);
+    tunnel2.draw(lightingShaderWithTexture);
+    //for (int i = 0; i < 25; i+=4) {
+    //    model = transforamtion(-8, 0, -30 + i, 1, 1, 1);
+    //    tree(pyramid, lightingShaderWithTexture, model);
+    //    model = transforamtion(-8, .5, -30 + i, 1, 1, 1);
+    //    cylinder.Draw(lightingShaderWithTexture, model);
+    //}
+    for (int i = 0; i < 25; i += 5) {
+        model = transforamtion(-8, 0, -30 + i, 1, 1, 1) * alTogether;
+        tree(pyramid, lightingShaderWithTexture, model);
+        model = transforamtion(-8, .5, -30 + i, 1, 1, 1) * alTogether;
+        cylinder.Draw(lightingShaderWithTexture, model);
+    }
+    for (int i = 0; i < 25; i += 5) {
+        model = transforamtion(-8 + 17, 0, -30 + i, 1, 1, 1) * alTogether;
+        tree(pyramid, lightingShaderWithTexture, model);
+        model = transforamtion(-8 + 17, .5, -30 + i, 1, 1, 1) * alTogether;
+        cylinder.Draw(lightingShaderWithTexture, model);
+    }
+    glm::mat4 model1 = glm::mat4(1.0f);
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = model1 * transforamtion(-2, 0, -15, 8, 8, 8) * alTogether;
+    pyramid2.setTransform(model);
+    pyramid2.draw(lightingShaderWithTexture);
+    pyramid2.setTransform(model * rotateYMatrix);
+    pyramid2.draw(lightingShaderWithTexture);
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = model1 * transforamtion(-3, 0, -11, 5, 5, 5) * alTogether;
+    pyramid2.setTransform(model);
+    pyramid2.draw(lightingShaderWithTexture);
+    pyramid2.setTransform(model * rotateYMatrix);
+    pyramid2.draw(lightingShaderWithTexture);
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = model1 * transforamtion(-4, 0, -18, 6, 6, 6) * alTogether;
+    pyramid2.setTransform(model);
+    pyramid2.draw(lightingShaderWithTexture);
+    pyramid2.setTransform(model * rotateYMatrix);
+    pyramid2.draw(lightingShaderWithTexture);
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = model1 * transforamtion(-4, 0, -22, 4, 4, 4) * alTogether;
+    pyramid2.setTransform(model);
+    pyramid2.draw(lightingShaderWithTexture);
+    pyramid2.setTransform(model * rotateYMatrix);
+    pyramid2.draw(lightingShaderWithTexture);
+    rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = model1 * transforamtion(-1, 0, -20, 3, 3, 3) * alTogether;
+    pyramid2.setTransform(model);
+    pyramid2.draw(lightingShaderWithTexture);
+    pyramid2.setTransform(model * rotateYMatrix);
+    pyramid2.draw(lightingShaderWithTexture);
+
+    model = transforamtion(-2, 1, -9, .5, .5, .5) * alTogether;
+    tree(pyramid, lightingShaderWithTexture, model);
+    model = transforamtion(-2, 1.3, -9, .5, .5, .5) * alTogether;
+    cylinder.Draw(lightingShaderWithTexture, model);
+    model = transforamtion(-2, 2.5, -12, .5, .5, .5) * alTogether;
+    tree(pyramid, lightingShaderWithTexture, model);
+    model = transforamtion(-2, 2.8, -12, .5, .5, .5) * alTogether;
+    cylinder.Draw(lightingShaderWithTexture, model);
+    model = transforamtion(-.1, 4, -15, .5, .5, .5) * alTogether;
+    tree(pyramid, lightingShaderWithTexture, model);
+    model = transforamtion(-.1, 4.5, -15, .5, .5, .5) * alTogether;
+    cylinder.Draw(lightingShaderWithTexture, model);
+}
 
 
 int main()
@@ -709,86 +787,7 @@ int main()
         //model *=  cubefollower.update(deltaTime/20);
         cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
         scene_manager(cube_array, alTogether, lightingShaderWithTexture);
-        //alTogether = transforamtion(0, 0, -11, 1, 1, 1);
-        //scene_manager(cube_array, alTogether, lightingShaderWithTexture);
-        //
-        //model = transforamtion(0, 0, 0, 1, 1, 1);
-
-        model = transforamtion(-10, -0.02, -35, 20, .01, 30);
-        forestg.drawCubeWithTexture(lightingShaderWithTexture, model);
-        
-        cr.draw(lightingShaderWithTexture);
-        cr2.draw(lightingShaderWithTexture);
-        tunnel.draw(lightingShaderWithTexture);
-        tunnel2.draw(lightingShaderWithTexture);
-        //for (int i = 0; i < 25; i+=4) {
-        //    model = transforamtion(-8, 0, -30 + i, 1, 1, 1);
-        //    tree(pyramid, lightingShaderWithTexture, model);
-        //    model = transforamtion(-8, .5, -30 + i, 1, 1, 1);
-        //    cylinder.Draw(lightingShaderWithTexture, model);
-        //}
-        for (int i = 0; i < 25; i += 5) {
-            model = transforamtion(-8, 0, -30 + i, 1, 1, 1);
-            tree(pyramid, lightingShaderWithTexture, model);
-            model = transforamtion(-8, .5, -30 + i, 1, 1, 1);
-            cylinder.Draw(lightingShaderWithTexture, model);
-        }
-        for (int i = 0; i < 25; i += 5) {
-            model = transforamtion(-8 + 17, 0, -30 + i, 1, 1, 1);
-            tree(pyramid, lightingShaderWithTexture, model);
-            model = transforamtion(-8 + 17, .5, -30 + i, 1, 1, 1);
-            cylinder.Draw(lightingShaderWithTexture, model);
-        }
-        glm::mat4 model1 = glm::mat4(1.0f);
-        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = model1 * transforamtion(-2, 0, -15, 8, 8, 8);
-        pyramid2.setTransform(model);
-        pyramid2.draw(lightingShaderWithTexture);
-        pyramid2.setTransform(model * rotateYMatrix);
-        pyramid2.draw(lightingShaderWithTexture);
-        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = model1 * transforamtion(-3, 0, -11, 5, 5, 5);
-        pyramid2.setTransform(model);
-        pyramid2.draw(lightingShaderWithTexture);
-        pyramid2.setTransform(model * rotateYMatrix);
-        pyramid2.draw(lightingShaderWithTexture);
-        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = model1 * transforamtion(-4, 0, -18, 6, 6, 6);
-        pyramid2.setTransform(model);
-        pyramid2.draw(lightingShaderWithTexture);
-        pyramid2.setTransform(model * rotateYMatrix);
-        pyramid2.draw(lightingShaderWithTexture);
-        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = model1 * transforamtion(-4, 0, -22, 4, 4, 4);
-        pyramid2.setTransform(model);
-        pyramid2.draw(lightingShaderWithTexture);
-        pyramid2.setTransform(model * rotateYMatrix);
-        pyramid2.draw(lightingShaderWithTexture);
-        rotateYMatrix = glm::rotate(identityMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = model1 * transforamtion(-1, 0, -20, 3, 3, 3);
-        pyramid2.setTransform(model);
-        pyramid2.draw(lightingShaderWithTexture);
-        pyramid2.setTransform(model * rotateYMatrix);
-        pyramid2.draw(lightingShaderWithTexture);
-
-        model = transforamtion(-2, 1, -9, .5, .5, .5);
-        tree(pyramid, lightingShaderWithTexture, model);
-        model = transforamtion(-2, 1.3, -9, .5, .5, .5);
-        cylinder.Draw(lightingShaderWithTexture, model);
-        model = transforamtion(-2, 2.5, -12, .5, .5, .5);
-        tree(pyramid, lightingShaderWithTexture, model);
-        model = transforamtion(-2, 2.8, -12, .5, .5, .5);
-        cylinder.Draw(lightingShaderWithTexture, model);
-        model = transforamtion(-.1, 4, -15, .5, .5, .5);
-        tree(pyramid, lightingShaderWithTexture, model);
-        model = transforamtion(-.1, 4.5, -15, .5, .5, .5);
-        cylinder.Draw(lightingShaderWithTexture, model);
-        run_time += deltaTime;
-        cout << int(run_time) % 5 << endl;
-        if (int(run_time) % 5 == 0) {
-            model = transforamtion(camera.Position.x, 1, camera.Position.z - 5, 1, 1, 1);
-            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
-        }
+        SceneManager2(lightingShaderWithTexture, alTogether, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
         ourShader.use();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);

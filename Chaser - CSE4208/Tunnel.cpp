@@ -121,7 +121,7 @@ void Tunnel::createMesh() {
 
             // First triangle of the quad
             vertices.push_back({ worldPoint, normal, {texCoordX, texCoordY} });
-            vertices.push_back({ nextWorldPoint, normal, {texCoordX, texCoordY + 1.0f / (curvePoints.size() - 1)} });
+            vertices.push_back({ nextWorldPoint, -normal, {texCoordX, texCoordY + 1.0f / (curvePoints.size() - 1)} });
 
             float nextAngle = (j + 1) % circlePoints * deltaAngle;
             glm::vec3 nextLocalPoint(cos(nextAngle) * tunnelRadius, sin(nextAngle) * tunnelRadius, 0.0f);
@@ -133,7 +133,7 @@ void Tunnel::createMesh() {
             vertices.push_back({ nextWorldPoint, normal, {texCoordX, texCoordY + 1.0f / (curvePoints.size() - 1)} });
             glm::vec3 nextWorldPoint3 = curvePoints[i + 1] + nextLocalPoint.x * nextRight + nextLocalPoint.y * up;
             vertices.push_back({ nextWorldPoint3, nextNormal, {texCoordX + 1.0f / circlePoints, texCoordY + 1.0f / (curvePoints.size() - 1)} });
-            vertices.push_back({ nextWorldPoint2, nextNormal, {texCoordX + 1.0f / circlePoints, texCoordY} });
+            vertices.push_back({ nextWorldPoint2, -nextNormal, {texCoordX + 1.0f / circlePoints, texCoordY} });
         }
     }
 }
