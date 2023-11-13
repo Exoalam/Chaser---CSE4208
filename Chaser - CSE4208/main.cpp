@@ -34,9 +34,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
-void drawCube(unsigned int& cubeVAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
-void drawCube(unsigned int& p1VAO, Shader& lightingShader, glm::mat4 model, float r, float g, float b);
-void scene(Cube cube, Shader& lightingShaderWithTexture, glm::mat4 alTogether);
 
 
 const unsigned int SCR_WIDTH = 1600;
@@ -71,6 +68,11 @@ float jump_velocity = 0;
 float rtime = 0;
 bool jumpup = true;
 bool walk = false;
+vector<int> fuel = { 1,1,1,1,1 };
+float fuel_count = 10;
+float fuel_index = 4;
+float bonus_rotate = 0;
+vector<glm::vec3> fuel_tank = { glm::vec3(0.5, 1, 10), glm::vec3(0, 1, 0) };
 
 // camera
 Camera camera(glm::vec3(0, .5f, 17.0f));
@@ -173,6 +175,14 @@ glm::mat4 render_player(float minAngle,float maxAngle,glm::vec3 pivot) {
     }
 }
 
+glm::mat4 self_rotate(glm::vec3 pivot) {
+    glm::mat4 transform = glm::mat4(1.0f); // Identity matrix
+    transform = glm::translate(transform, pivot); // Translate to the pivot point
+    transform = glm::rotate(transform, glm::radians(bonus_rotate++), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate around y-axis
+    transform = glm::translate(transform, pivot); // Translate back
+    return transform;
+}
+
 
 void protagonist(Sphere &sphere, Cylinder &cylinder, Shader shader, glm::mat4 model) {
 
@@ -224,7 +234,7 @@ void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
 }
 
 
-void scene_manager(Cube cube[], glm::mat4 alTogether, Shader lightingShaderWithTexture) {
+void scene_manager(Cube cube[],glm::mat4 alTogether, Shader lightingShaderWithTexture) {
     float baseHeight = 0.01;
     float width = 2;
     float length = 20;
@@ -233,7 +243,6 @@ void scene_manager(Cube cube[], glm::mat4 alTogether, Shader lightingShaderWithT
     model = transforamtion(-10, -0.01, -5, width * 10, baseHeight, length);
     model = alTogether * model;
     cube[0].drawCubeWithTexture(lightingShaderWithTexture, model);
-
     //road
     model = transforamtion(-1, 0, -5, width, baseHeight, length);
     model = alTogether * model;
@@ -518,6 +527,9 @@ int main()
     string forestgpath = "Textures/forestground.jpg";
     unsigned int fgp = loadTexture(forestgpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     Cube forestg = Cube(fgp, fgp, 32.0f, 0.0f, 0.0f, 10.0f, 10.0f);
+    string gaspath = "Textures/gas.jpg";
+    unsigned int ggp = loadTexture(gaspath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube gas = Cube(ggp, ggp, 32.0f, 0.0f, 0.0f, 1, 1);
 
     string treepath = "Textures/tree.jpg";
     string humanpath = "Textures/human.jpg";
@@ -684,6 +696,7 @@ int main()
     float TYmin = 0.0f;
     float TYmax = 1.0f;
     Sphere player_head = Sphere(radius, sectorCount, stackCount, ambient, diffuse, specular,shininess, hump, hump, 0.0f, 0.0f, 1.0f, 1.0f);
+    glm::mat4 bonus_pos = transforamtion(0.5, 1, 10, .2, .5, .2);
     while (!glfwWindowShouldClose(window))
     {
         
@@ -709,7 +722,14 @@ int main()
 
         // Interpolate between dawn and dusk colors
         glm::vec4 currentColor = dawnColor * (1.0f - time) + duskColor * time;
-        
+        fuel_count -= deltaTime;
+        if (fuel_count < 0) {
+            if (fuel_index > -1) {
+                fuel[fuel_index] = 0;
+                fuel_index--;
+            }
+            fuel_count = 5;
+        }
         // Set the clear color using the current interpolated color
         glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 30.0f);
@@ -816,12 +836,12 @@ int main()
             jumpup = true;
         }
         float playerx = camera.Position.x;
-        float playerz = camera.Position.z;
+        float playerz = camera.Position.z-2;
         //if (playerx < -1)
         //    playerx = -1;
         //if (playerx > .5f)
         //    playerx = .5;
-        model = transforamtion(playerx, jump, camera.Position.z-2, 2, 2, 2);
+        model = transforamtion(playerx, jump, playerz, 2, 2, 2);
         //cout << playerx << " " << playerz << endl;
         //model = transforamtion(0, jump, 10, .5, .5, .5);
         //model *=  cubefollower.update(deltaTime/20);
@@ -839,7 +859,7 @@ int main()
             current_mat3 *= transforamtion(0, 0, -50, 1, 1, 1);
             current_position3 = camera.Position;
         }
-        scene_manager(cube_array, current_mat1, lightingShaderWithTexture);
+        scene_manager(cube_array,current_mat1, lightingShaderWithTexture);
         SceneManager2(lightingShaderWithTexture, current_mat3, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
         ourShader.use();
         ourShader.setMat4("projection", projection);
@@ -872,8 +892,41 @@ int main()
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             //glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-       
+        for (int i = -2; i < 3; i++) {
+            model = transforamtion(playerx+i*.1, jump+1, playerz, .05, .05, .05);;
+            ourShader.setMat4("model", model);
+            if (fuel[i + 2] == 1) {
+                ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
+            }
+            else {
+                ourShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+            }
+            
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
+        model = transforamtion(fuel_tank[0][0], fuel_tank[0][1], fuel_tank[0][2], .2, .5, .2);
+        model = model * self_rotate(glm::vec3(-.5, 0, -.5));
+        model = current_mat1 * model;
+        ourShader.setMat4("model", model);
+        ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
+        model = transforamtion(fuel_tank[1][0], fuel_tank[1][1], fuel_tank[1][2], .2, .5, .2);
+        model = model * self_rotate(glm::vec3(-.5, 0, -.5));
+        model = current_mat1 * model;
+        ourShader.setMat4("model", model);
+        ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        
+        for (auto a : fuel_tank) {
+            if (glm::distance(camera.Position.z, a.z) < 2 and glm::distance(camera.Position.z, a.z) > 1.8 and glm::distance(camera.Position.x, a.x)<.1) {
+                if (fuel_index < 4) {
+                    fuel_index++;
+                    fuel[fuel_index] = 1;
+                    cout << "Refilled" << endl;
+                }
+            }
+        }
         lightingShader.use();
         lightingShader.setVec3("viewPos", camera.Position);
         lightingShader.setMat4("projection", projection);
