@@ -71,7 +71,7 @@ float jump_velocity = 0;
 float rtime = 0;
 bool jumpup = true;
 // camera
-Camera camera(glm::vec3(0.0f, 1.1f, 5.2f));
+Camera camera(glm::vec3(0, 1.1f, 17.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -618,7 +618,10 @@ int main()
   
     Cylinder cylinder(.15, .1, 1, 16, 20, "Textures/treebase.png");
     float run_time = 0;
-
+    glm::vec3 current_position1 = camera.Position;
+    glm::vec3 current_position2 = camera.Position;
+    glm::mat4 current_mat1 = glm::mat4(1.0f);
+    glm::mat4 current_mat2 = transforamtion(0, 0, -20, 1, 1, 1);
     while (!glfwWindowShouldClose(window))
     {
         
@@ -647,7 +650,7 @@ int main()
 
         // Set the clear color using the current interpolated color
         glClearColor(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 30.0f);
         //glm::mat4 projection = glm::ortho(-2.0f, +2.0f, -1.5f, +1.5f, 0.1f, 100.0f);
 
         // camera/view transformation
@@ -776,18 +779,33 @@ int main()
             jumpup = true;
         }
         //model = transforamtion(movelr, jump, movefr, .5, .5, .5);
-        float playerx = camera.Position.x;
+        float playerx = camera.Position.x-.22f;
+        float playerz = camera.Position.z;
         //if (playerx < -1)
         //    playerx = -1;
         //if (playerx > .5f)
         //    playerx = .5;
         
         model = transforamtion(playerx, jump, camera.Position.z-3, .5, .5, .5);
+        //cout << playerx << " " << playerz << endl;
         //model = transforamtion(0, jump, 10, .5, .5, .5);
         //model *=  cubefollower.update(deltaTime/20);
         cube_array[4].drawCubeWithTexture(lightingShaderWithTexture, model);
-        scene_manager(cube_array, alTogether, lightingShaderWithTexture);
-        SceneManager2(lightingShaderWithTexture, alTogether, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
+        cout << "distance1: " << current_position1.z- camera.Position.z << endl;
+        cout << "distance2: " << current_position2.z- camera.Position.z << endl;
+        if (current_position1.z - camera.Position.z > 22) {
+            current_mat1 *= transforamtion(0, 0, -40, 1, 1, 1);
+            current_position1 = camera.Position-glm::vec3(0,0,20);
+        }
+        if (current_position2.z - camera.Position.z > 42) {
+            current_mat2 *= transforamtion(0, 0, -40, 1, 1, 1);
+            current_position2 = camera.Position;
+        }
+            
+        
+        scene_manager(cube_array, current_mat1, lightingShaderWithTexture);
+        scene_manager(cube_array, current_mat2, lightingShaderWithTexture);
+        //SceneManager2(lightingShaderWithTexture, alTogether, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
         ourShader.use();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
