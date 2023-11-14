@@ -1013,14 +1013,16 @@ int main()
 
             model = transforamtion(fuel_tank[0][0], fuel_tank[0][1], fuel_tank[0][2], .2, .5, .2);
             model = model * self_rotate(glm::vec3(-.5, 0, -.5));
-            model = current_mat1 * model;
+            //model = current_mat1 * model;
+            fuel_tank[0][2] = current_mat1[3][2]+10;
             ourShader.setMat4("model", model);
             ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
             model = transforamtion(fuel_tank[1][0], fuel_tank[1][1], fuel_tank[1][2], .2, .5, .2);
             model = model * self_rotate(glm::vec3(-.5, 0, -.5));
-            model = current_mat1 * model;
+            //model = current_mat1 * model;
+            fuel_tank[1][2] = current_mat1[3][2];
             ourShader.setMat4("model", model);
             ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
