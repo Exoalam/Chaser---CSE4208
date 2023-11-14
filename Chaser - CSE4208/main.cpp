@@ -1151,6 +1151,9 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
         camera.ProcessKeyboard(P_UP, deltaTime);
     }
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        fuel[0] = 0;
+    }
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
         camera.ProcessKeyboard(P_DOWN, deltaTime);
     }
