@@ -962,6 +962,12 @@ int main()
            s3.drawCubeWithTexture(lightingShaderWithTexture, model);
            model = transforamtion(camera.Position.x - 1, camera.Position.y - 1, camera.Position.z - 7, 2, .5, .1);
            s4.drawCubeWithTexture(lightingShaderWithTexture, model);
+           camera.reset_camera(0, .5f, 17.0f);
+            current_position1 = camera.Position;
+            current_position2 = camera.Position;
+            current_position3 = camera.Position;
+            current_mat1 = glm::mat4(1.0f);
+            current_mat3 = transforamtion(0, 0, 0, 1, 1, 1);
        }
        else {
            glm::mat4 model = transforamtion(camera.Position.x-2.5, camera.Position.y, camera.Position.z - 7, 5,1,.1);

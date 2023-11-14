@@ -81,6 +81,10 @@ public:
         Pitch = pitch;
         updateCameraVectors();
     }
+    void reset_camera(float posX, float posY, float posZ) {
+        Position = glm::vec3(posX, posY, posZ);
+        updateCameraVectors();
+    }
     void Orbit(float dTheta, float dPhi) {
         Target = GetViewMatrix()[3];
         Distance = glm::distance(Target, Position);
