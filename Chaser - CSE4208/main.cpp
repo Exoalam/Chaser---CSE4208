@@ -27,8 +27,10 @@
 #include "Skybox.h"
 #include "Cylinder.h"
 #include "CubeFollower.h"
+#include <irrKlang.h>
 
 using namespace std;
+using namespace irrklang;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -140,7 +142,10 @@ bool nightmode = true;
 // timing
 float deltaTime = 0.0f;    // time between current frame and last frame
 float lastFrame = 0.0f;
-
+ISoundEngine* engine = createIrrKlangDevice();
+ISoundEngine* engine2 = createIrrKlangDevice();
+ISoundEngine* engine3 = createIrrKlangDevice();
+ISoundEngine* engine4 = createIrrKlangDevice();
 glm::mat4 transforamtion(float tx, float ty, float tz,float sx, float sy, float sz) {
     glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     glm::mat4 translateMatrix, rotateXMatrix, rotateYMatrix, rotateZMatrix, scaleMatrix, model;
@@ -475,7 +480,10 @@ int main()
     // When drawing the skybox
 
 
-    
+
+    engine->play2D("intro.mp3", true);
+    engine3->play2D("run.mp3", true, true);
+    engine4->play2D("gameover.mp3", false, true);
     string droadpath = "Textures/road.png";
     string sroadpath = "Textures/road.png";
     unsigned int droad = loadTexture(droadpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
@@ -710,7 +718,7 @@ int main()
     glm::mat4 bonus_pos = transforamtion(0.5, 1, 10, .2, .5, .2);
     while (!glfwWindowShouldClose(window))
     {
-        
+
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -968,6 +976,8 @@ int main()
             current_position3 = camera.Position;
             current_mat1 = glm::mat4(1.0f);
             current_mat3 = transforamtion(0, 0, 0, 1, 1, 1);
+            engine3->setAllSoundsPaused(true);
+            engine4->setAllSoundsPaused(false);
        }
        else {
            glm::mat4 model = transforamtion(camera.Position.x-2.5, camera.Position.y, camera.Position.z - 7, 5,1,.1);
@@ -1037,6 +1047,8 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
         start_scene = false;
+        engine->drop();
+        engine3->setAllSoundsPaused(false);
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         camera.ProcessKeyboard(UP, deltaTime);
@@ -1047,6 +1059,8 @@ void processInput(GLFWwindow* window)
         game_over = false;
         fuel = { 1,1,1,1,1 };
         fuel_index = 4;
+        engine3->setAllSoundsPaused(false);
+        engine4->play2D("gameover.mp3", false, true);
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
         camera.ProcessKeyboard(P_UP, deltaTime);
@@ -1080,6 +1094,7 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         jump = .03;
+        engine2->play2D("jump.mp3");
     }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
         if (directionallightToggle)

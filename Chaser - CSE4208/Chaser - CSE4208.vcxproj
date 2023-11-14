@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,6 +162,9 @@
     <None Include="fragmentShader.fs" />
     <None Include="fragmentShaderForPhongShading.fs" />
     <None Include="fragmentShaderForPhongShadingWithTexture.fs" />
+    <None Include="ikpFlac.dll" />
+    <None Include="ikpMP3.dll" />
+    <None Include="irrKlang.dll" />
     <None Include="skyboxshader.fs" />
     <None Include="skyboxvshader.vs" />
     <None Include="vertexShader.vs" />

@@ -86,12 +86,6 @@
     <ClInclude Include="CubeFollower.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertexShaderForPhongShading.vs">
@@ -117,6 +111,15 @@
     </None>
     <None Include="skyboxvshader.vs">
       <Filter>Header Files</Filter>
+    </None>
+    <None Include="irrKlang.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ikpFlac.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ikpMP3.dll">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
 </Project>
