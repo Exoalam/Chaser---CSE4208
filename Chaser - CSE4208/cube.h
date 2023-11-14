@@ -74,6 +74,10 @@ public:
         glDeleteBuffers(1, &cubeVBO);
         glDeleteBuffers(1, &cubeEBO);
     }
+    void setTexture(unsigned int dMap, unsigned int sMap) {
+        this->diffuseMap = dMap;
+        this->specularMap = sMap;
+    }
 
     void drawCubeWithTexture(Shader& lightingShaderWithTexture, glm::mat4 model = glm::mat4(1.0f))
     {

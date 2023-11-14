@@ -77,7 +77,7 @@ float bonus_rotate = 0;
 vector<glm::vec3> fuel_tank = { glm::vec3(0.5, 1, 10), glm::vec3(0, 1, 0) };
 bool start_scene = true;
 bool game_over = false;
-
+vector<int> score = { 0,0,0,0 };
 // camera
 Camera camera(glm::vec3(0, .5f, 17.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -89,7 +89,7 @@ float lookAtX = 0.0, lookAtY = 0.0, lookAtZ = 0.0;
 glm::vec3 V = glm::vec3(0.0f, 1.0f, 0.0f);
 BasicCamera basic_camera(eyeX, eyeY, eyeZ, lookAtX, lookAtY, lookAtZ, V);
 unsigned int loadTexture(char const* path, GLenum textureWrappingModeS, GLenum textureWrappingModeT, GLenum textureFilteringModeMin, GLenum textureFilteringModeMax);
-
+float inital_position = 17;
 
 
 // positions of the point lights
@@ -238,6 +238,38 @@ void tree(Pyramid &pyramid, Shader shader, glm::mat4 model1) {
     }
 
 
+}
+void score_manager(int score, Cube cube[], Shader shader, glm::mat4 model) {
+    if (score == 0) {
+        cube[0].drawCubeWithTexture(shader, model);
+    }
+    if (score == 1) {
+        cube[1].drawCubeWithTexture(shader, model);
+    }
+    if (score == 2) {
+        cube[2].drawCubeWithTexture(shader, model);
+    }
+    if (score == 3) {
+        cube[3].drawCubeWithTexture(shader, model);
+    }
+    if (score == 4) {
+        cube[4].drawCubeWithTexture(shader, model);
+    }
+    if (score == 5) {
+        cube[5].drawCubeWithTexture(shader, model);
+    }
+    if (score == 6) {
+        cube[6].drawCubeWithTexture(shader, model);
+    }
+    if (score == 7) {
+        cube[7].drawCubeWithTexture(shader, model);
+    }
+    if (score == 8) {
+        cube[8].drawCubeWithTexture(shader, model);
+    }
+    if (score == 9) {
+        cube[9].drawCubeWithTexture(shader, model);
+    }
 }
 
 
@@ -478,7 +510,38 @@ int main()
     // ... setup the rest of your application ...
 
     // When drawing the skybox
+    string path0 = "Numbers/0.png";
+    unsigned int px0 = loadTexture(path0.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s01 = Cube(px0, px0, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path1 = "Numbers/1.png";
+    unsigned int px1 = loadTexture(path1.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s11 = Cube(px1, px1, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path2 = "Numbers/2.png";
+    unsigned int px2 = loadTexture(path2.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s21 = Cube(px2, px2, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path3 = "Numbers/3.png";
+    unsigned int px3 = loadTexture(path3.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s31 = Cube(px3, px3, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path4 = "Numbers/4.png";
+    unsigned int px4 = loadTexture(path4.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s41 = Cube(px4, px4, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path5 = "Numbers/5.png";
+    unsigned int px5 = loadTexture(path5.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s51 = Cube(px5, px5, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path6 = "Numbers/6.png";
+    unsigned int px6 = loadTexture(path6.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s61 = Cube(px6, px6, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path7 = "Numbers/7.png";
+    unsigned int px7 = loadTexture(path7.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s71 = Cube(px7, px7, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path8 = "Numbers/8.png";
+    unsigned int px8 = loadTexture(path8.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s81 = Cube(px8, px8, 32.0f, 0.0f, 0.0f, 1, 1);
+    string path9 = "Numbers/9.png";
+    unsigned int px9 = loadTexture(path9.c_str(), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+    Cube s91 = Cube(px9, px9, 32.0f, 0.0f, 0.0f, 1, 1);
 
+    Cube score_cubes[] = { s01, s11, s21, s31, s41, s51, s61, s71, s81, s91};
 
 
     engine->play2D("intro.mp3", true);
@@ -553,7 +616,12 @@ int main()
     string treepath = "Textures/tree.jpg";
     string humanpath = "Textures/human.jpg";
     unsigned int hump = loadTexture(humanpath.c_str(), GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+
     Cube cube_array[] = {grass, road, footpath, footpath2, player, b1, pool, win};
+
+
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
@@ -716,6 +784,8 @@ int main()
     float TYmax = 1.0f;
     Sphere player_head = Sphere(radius, sectorCount, stackCount, ambient, diffuse, specular,shininess, hump, hump, 0.0f, 0.0f, 1.0f, 1.0f);
     glm::mat4 bonus_pos = transforamtion(0.5, 1, 10, .2, .5, .2);
+    int total_score = 0;
+
     while (!glfwWindowShouldClose(window))
     {
 
@@ -882,6 +952,21 @@ int main()
             }
             scene_manager(cube_array, current_mat1, lightingShaderWithTexture);
             SceneManager2(lightingShaderWithTexture, current_mat3, forestg, cr, cr2, tunnel, tunnel2, pyramid, pyramid2, cylinder);
+
+            total_score = int((inital_position - camera.Position.z) * 10);
+            model = transforamtion(playerx+.1, jump + .8, playerz, .1,.1, .1);
+            score_manager(total_score % 10, score_cubes, lightingShaderWithTexture, model);
+            total_score /= 10;
+            model = transforamtion(playerx, jump + .8, playerz, .1, .1, .1);
+            score_manager(total_score % 10, score_cubes, lightingShaderWithTexture, model);
+            total_score /= 10;
+            model = transforamtion(playerx-.1, jump + .8, playerz, .1, .1, .1);
+            score_manager(total_score % 10, score_cubes, lightingShaderWithTexture, model);
+            total_score /= 10;
+            model = transforamtion(playerx-.2, jump + .8, playerz, .1, .1, .1);
+            score_manager(total_score % 10, score_cubes, lightingShaderWithTexture, model);
+            model = transforamtion(1000, 0, 0, 1, 1, 1);
+            cube.drawCubeWithTexture(lightingShaderWithTexture, model);
             ourShader.use();
             ourShader.setMat4("projection", projection);
             ourShader.setMat4("view", view);
@@ -914,7 +999,7 @@ int main()
                 //glDrawArrays(GL_TRIANGLES, 0, 36);
             }
             for (int i = -2; i < 3; i++) {
-                model = transforamtion(playerx + i * .1, jump + 1, playerz, .05, .05, .05);;
+                model = transforamtion(playerx + i * .1, jump + 1, playerz, .05, .05, .05);
                 ourShader.setMat4("model", model);
                 if (fuel[i + 2] == 1) {
                     ourShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
@@ -925,6 +1010,7 @@ int main()
 
                 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             }
+
             model = transforamtion(fuel_tank[0][0], fuel_tank[0][1], fuel_tank[0][2], .2, .5, .2);
             model = model * self_rotate(glm::vec3(-.5, 0, -.5));
             model = current_mat1 * model;
